@@ -1,0 +1,485 @@
+file,mask_idx,target_len,prompt_snippet,target_snippet,generations,best_token_recall,best_bleu,best_rougeL,exact_match_any
+crates/router/src/routes/payment_methods.rs,0,566,"#[cfg(all(
+    any(feature = ""v1"", feature = ""v2"", feature = ""olap"", feature = ""oltp""),
+    all(not(feature = ""customer_v2""), not(feature = ""payment_methods_v2""))
+))]
+use actix_multipart::form::MultipartForm;
+use actix_web::{web, HttpRequest, HttpResponse};
+use common_utils::{errors::CustomResult, id_type, transformers::ForeignFrom};
+use diesel_models::enums::IntentStatus;
+use error_stack::ResultE...","
+    let flow = Flow::PaymentMethodsCreate;
+
+    Box::pin(api::server_wrap(
+        flow,
+        state,
+        &req,
+        json_payload.into_inner(),
+        |state, auth: auth::AuthenticationData, req, _| async move {
+            Box::pin(cards::get_client_secret_or_add_payment_method(
+                &state,
+                req,
+                &auth.merchant_account,
+                &auth.k...","['    let flow = Flow::PaymentMethodsCreate;\n    Box::pin(api::server_wrap(\n        flow,\n        state.clone(),\n        &req,\n        json_payload.into_inner(),\n        |state, auth: auth::AuthenticationData, req, _| {\n            create_payment_method(\n                &state,\n                auth.merchant_account,\n                auth.key_store,\n                req,\n                None,\n                None,\n            )\n        },\n        &auth::ApiKeyAuth,\n        api_locking::LockAction::NotApplicable,\n    ))\n    .await\n}\n\n#[cfg(all(\n    any(feature = ""v1"", feature = ""v2""),\n    not(feature = ""payment_methods_v2"")\n))]\n#[instrument(skip_all, fields(flow = ?Flow::PaymentMethodsCreate))]\npub async fn create_payment_method_api_with_merchant_id(\n    state: web::Data<AppState>,\n    req: HttpRequest,\n    json_payload: web::Json<payment_methods::PaymentMethodCreate>,\n    path: web::Path<id_type::MerchantId>,\n) -> HttpResponse {\n    let flow = Flow::PaymentMethodsCreate;\n    let req = json_payload.into_inner();\n    let merchant_id = path.into_inner();\n    let req = Box::pin(api::server_wrap(\n        flow,\n        state.clone(),\n        &req,\n        req,\n        |state, auth: auth::AuthenticationData, req, _| {\n            create_paymentMethod_with_merchant_id(\n                &state,\n                auth.merchant_account,\n                auth.key_store,\n                req,\n                merchant_id.clone(),\n                None,\n                None,\n            )\n        },\n        &auth::ApiKeyAuth,\n        api_locking::LockAction::NotApplicable,\n    ))\n    .await;\n    req\n}\n\n#[cfg(all(\n    any(feature = ""v1"", feature = ""v2""),\n    not(feature = ""payment_methods_v2"")\n))]\n#[instrument(skip_all, fields(flow = ?Flow::PaymentMethodsCreate))]\npub async fn create_payment_method_api_with_merchant_id_and_customer_id(\n    state: web::Data<AppState>,\n    req: HttpRequest,\n    json_payload: web::Json<payment_methods::PaymentMethodCreate>,\n    path: web::Path<(\n        id_type::MerchantId,\n        id_type::CustomerId,\n    ),\n) -> HttpResponse {\n    let flow = Flow::PaymentMethodsCreate;\n    let req = json_payload.into_inner();\n    let (merchant_id, customer_id) = path.into_inner();\n    let req = Box::pin(api::server_wrap(\n        flow,\n        state.clone(),\n        &req,\n        req,\n        |state, auth: auth::AuthenticationData, req, _| {\n            create_paymentMethod_with_merchant_id_and_customer_id(\n                &state,\n                auth.merchant_account,\n                auth.key_store,\n                req,\n                merchant_id.clone(),\n                Some(customer_id.clone()),\n                None,\n            )\n        },\n        &auth::ApiKeyAuth,\n        api_locking::LockAction::NotApplicable,\n    ))\n    .await;\n    req\n}\n\n#[cfg(all(\n    any(feature = ""v1"", feature = ""v2""),\n    not(feature = ""payment_methods_v2"")\n))]\npub async fn create_paymentMethod_with_merchant_id_and_customer_id(\n    state: &SessionState,\n    merchant_account: domain::MerchantAccount,\n    key_store: domain::MerchantKeyStore,\n    req: payment_methods::PaymentMethodCreate,\n    merchant_id: id_type::MerchantId,\n    customer_id: Option<id_type::CustomerId>,\n    auth_flow: Option<auth::AuthFlow>,\n) -> HttpResponse {\n    let flow = Flow::PaymentMethodsCreate;\n    let create_pm_req = Box::pin(api::server_wrap(\n        flow,\n        state.clone(),\n        &merchant_account,\n        req,\n        |state, auth: auth::AuthenticationData, req, _| {\n            create_payment_method(\n                state,\n                auth.merchant_account,\n                auth.key_store,\n                req,\n                customer_id,\n                auth_flow,\n            )\n        },\n        &auth::ApiKeyAuth,\n        api_locking::LockAction::NotApplicable,\n    ))\n    .await;\n    create_pm_req\n}\n\n#[cfg(all(\n    any(feature = ""v1"", feature = ""v2""),\n    not(feature = ""payment_methods_v2"")\n))]\npub async fn create_paymentMethod_with_merchant_id(\n    state: &SessionState,\n    merchant_account: domain::MerchantAccount,\n    key_store: domain::MerchantKeyStore,\n    req: payment_methods::PaymentMethodCreate,\n    merchant_id: id_type::MerchantId,\n    auth_flow: Option<auth::AuthFlow>,\n) -> HttpResponse {\n    let flow = Flow::PaymentMethodsCreate;\n    let mut req = req;\n    req.merchant_id = Some(merchant_id);\n    let create_pm_req = Box::pin(api::server_wrap(\n        flow,\n        state.clone(),\n        &merchant_account,\n        req,\n        |state, auth: auth::AuthenticationData, req, _|', '', '']",0.9112903225806451,8.762426754923117,17.02970297029703,0
+crates/router/src/routes/payment_methods.rs,1,616,"#[cfg(all(
+    any(feature = ""v1"", feature = ""v2"", feature = ""olap"", feature = ""oltp""),
+    all(not(feature = ""customer_v2""), not(feature = ""payment_methods_v2""))
+))]
+use actix_multipart::form::MultipartForm;
+use actix_web::{web, HttpRequest, HttpResponse};
+use common_utils::{errors::CustomResult, id_type, transformers::ForeignFrom};
+use diesel_models::enums::IntentStatus;
+use error_stack::ResultE...","
+    let flow = Flow::PaymentMethodsCreate;
+
+    Box::pin(api::server_wrap(
+        flow,
+        state,
+        &req,
+        json_payload.into_inner(),
+        |state, auth: auth::AuthenticationData, req, req_state| async move {
+            Box::pin(payment_methods_routes::create_payment_method(
+                &state,
+                &req_state,
+                req,
+                &auth.mercha...","['    let flow = Flow::PaymentMethodsCreate;\n    let state = Arc::clone(&state);\n    let json_payload = json_payload.into_inner();\n    let auth = Box::pin(auth::get_auth_for_pm_create(\n        &state,\n        &req,\n        &json_payload,\n        &Flow::PaymentMethodsCreate,\n    ))\n    .await?;\n    let auth = auth::AuthenticationData {\n        merchant_id: auth.merchant_id,\n        key_store: auth.key_store,\n        merchant_account: auth.merchant_account,\n        auth_type: auth.auth_type,\n        auth_flow: auth::AuthFlow::Api,\n        merchant_connector_account: auth.merchant_connector_account,\n        header_payload: auth.header_payload,\n    };\n\n    let flow = Flow::PaymentMethodsCreate;\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let auth = Box::pin(auth::get_auth_for_pm_create(\n        &state,\n        &req,\n        &json_payload,\n        &Flow::PaymentMethodsCreate,\n    ))\n    .await?;\n    let auth = auth::AuthenticationData {\n        merchant_id: auth.merchant_id,\n        key_store: auth.key_store,\n        merchant_account: auth.merchant_account,\n        auth_type: auth.auth_type,\n        auth_flow: auth::AuthFlow::Api,\n        merchant_connector_account: auth.merchant_connector_account,\n        header_payload: auth.header_payload,\n    };\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n    let json_payload = json_payload.into_inner();\n    let state = Arc::clone(&state);\n\n    let flow = Flow::PaymentMethodsCreate;\n\n', '', '']",0.6136363636363636,4.847100836656873,9.168081494057725,0
+crates/router/src/routes/payment_methods.rs,2,556,"#[cfg(all(
+    any(feature = ""v1"", feature = ""v2"", feature = ""olap"", feature = ""oltp""),
+    all(not(feature = ""customer_v2""), not(feature = ""payment_methods_v2""))
+))]
+use actix_multipart::form::MultipartForm;
+use actix_web::{web, HttpRequest, HttpResponse};
+use common_utils::{errors::CustomResult, id_type, transformers::ForeignFrom};
+use diesel_models::enums::IntentStatus;
+use error_stack::ResultE...","
+    let flow = Flow::PaymentMethodsCreate;
+
+    Box::pin(api::server_wrap(
+        flow,
+        state,
+        &req,
+        json_payload.into_inner(),
+        |state, auth: auth::AuthenticationData, req, _| async move {
+            Box::pin(payment_methods_routes::payment_method_intent_create(
+                &state,
+                req,
+                &auth.merchant_account,
+                &...","['', '', '']",0.0,0.0,0.0,0
+crates/api_models/src/disputes.rs,0,248,"use std::collections::HashMap;
+
+use common_utils::types::TimeRange;
+use masking::{Deserialize, Serialize};
+use serde::de::Error;
+use time::PrimitiveDateTime;
+use utoipa::ToSchema;
+
+use super::enums::{Currency, DisputeStage, DisputeStatus};
+use crate::{admin::MerchantConnectorInfo, files};
+
+#[derive(Clone, Debug, Serialize, ToSchema, Eq, PartialEq)]
+pub struct DisputeResponse {
+    /// The identifi...","
+    let output = Option::<&str>::deserialize(v)?;
+    output
+        .map(|s| {
+            s.split("","")
+                .map(|x| x.parse::<T>().map_err(D::Error::custom))
+                .collect::<Result<_, _>>()
+        })
+        .transpose()
+","['', '', '']",0.0,0.0,0.0,0
+crates/hyperswitch_interfaces/src/webhooks.rs,0,476,"//! Webhooks interface
+
+use common_utils::{crypto, errors::CustomResult, ext_traits::ValueExt};
+use error_stack::ResultExt;
+use hyperswitch_domain_models::{
+    api::ApplicationResponse, errors::api_error_response::ApiErrorResponse,
+};
+use masking::{ExposeInterface, Secret};
+
+use crate::{api::ConnectorCommon, errors};
+
+/// struct IncomingWebhookRequestDetails
+#[derive(Debug)]
+pub struct IncomingWe...","
+        match api_error_response {
+            ApiErrorResponse::WebhookResourceNotFound
+            | ApiErrorResponse::DisputeNotFound { .. }
+            | ApiErrorResponse::PayoutNotFound
+            | ApiErrorResponse::MandateNotFound
+            | ApiErrorResponse::PaymentNotFound
+            | ApiErrorResponse::RefundNotFound
+            | ApiErrorResponse::AuthenticationNotFound { .. } => ...","['', '', '']",0.0,0.0,0.0,0
+crates/hyperswitch_interfaces/src/webhooks.rs,1,47,"//! Webhooks interface
+
+use common_utils::{crypto, errors::CustomResult, ext_traits::ValueExt};
+use error_stack::ResultExt;
+use hyperswitch_domain_models::{
+    api::ApplicationResponse, errors::api_error_response::ApiErrorResponse,
+};
+use masking::{ExposeInterface, Secret};
+
+use crate::{api::ConnectorCommon, errors};
+
+/// struct IncomingWebhookRequestDetails
+#[derive(Debug)]
+pub struct IncomingWe...","
+        Ok(Box::new(crypto::NoAlgorithm))
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/hyperswitch_interfaces/src/webhooks.rs,2,39,"//! Webhooks interface
+
+use common_utils::{crypto, errors::CustomResult, ext_traits::ValueExt};
+use error_stack::ResultExt;
+use hyperswitch_domain_models::{
+    api::ApplicationResponse, errors::api_error_response::ApiErrorResponse,
+};
+use masking::{ExposeInterface, Secret};
+
+use crate::{api::ConnectorCommon, errors};
+
+/// struct IncomingWebhookRequestDetails
+#[derive(Debug)]
+pub struct IncomingWe...","
+        Ok(request.body.to_vec())
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/ext_traits.rs,0,2879,"//! This module holds traits for extending functionalities for existing datatypes
+//! & inbuilt datatypes.
+
+use error_stack::ResultExt;
+use masking::{ExposeInterface, PeekInterface, Secret, Strategy};
+use quick_xml::de;
+#[cfg(all(feature = ""logs"", feature = ""async_ext""))]
+use router_env::logger;
+use serde::{Deserialize, Serialize};
+
+use crate::{
+    crypto,
+    errors::{self, CustomResult},
+    fp...","
+    fn convert_and_encode<P>(&'e self) -> CustomResult<String, errors::ParsingError>
+    where
+        P: TryFrom<&'e Self> + Serialize,
+        Result<P, <P as TryFrom<&'e Self>>::Error>: ResultExt,
+        <Result<P, <P as TryFrom<&'e Self>>::Error> as ResultExt>::Ok: Serialize,
+    {
+        serde_json::to_string(
+            &P::try_from(self).change_context(errors::ParsingError::UnknownError...","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/ext_traits.rs,1,534,"//! This module holds traits for extending functionalities for existing datatypes
+//! & inbuilt datatypes.
+
+use error_stack::ResultExt;
+use masking::{ExposeInterface, PeekInterface, Secret, Strategy};
+use quick_xml::de;
+#[cfg(all(feature = ""logs"", feature = ""async_ext""))]
+use router_env::logger;
+use serde::{Deserialize, Serialize};
+
+use crate::{
+    crypto,
+    errors::{self, CustomResult},
+    fp...","
+    fn parse_struct<'de, T>(
+        &'de self,
+        type_name: &'static str,
+    ) -> CustomResult<T, errors::ParsingError>
+    where
+        T: Deserialize<'de>,
+    {
+        use bytes::Buf;
+
+        serde_json::from_slice::<T>(self.chunk())
+            .change_context(errors::ParsingError::StructParseFailure(type_name))
+            .attach_printable_lazy(|| {
+                let variable_t...","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/ext_traits.rs,2,419,"//! This module holds traits for extending functionalities for existing datatypes
+//! & inbuilt datatypes.
+
+use error_stack::ResultExt;
+use masking::{ExposeInterface, PeekInterface, Secret, Strategy};
+use quick_xml::de;
+#[cfg(all(feature = ""logs"", feature = ""async_ext""))]
+use router_env::logger;
+use serde::{Deserialize, Serialize};
+
+use crate::{
+    crypto,
+    errors::{self, CustomResult},
+    fp...","
+    #[track_caller]
+    fn parse_struct<'de, T>(
+        &'de self,
+        type_name: &'static str,
+    ) -> CustomResult<T, errors::ParsingError>
+    where
+        T: Deserialize<'de>,
+    {
+        serde_json::from_slice(self)
+            .change_context(errors::ParsingError::StructParseFailure(type_name))
+            .attach_printable_lazy(|| format!(""Unable to parse {type_name} from &[u8] {:...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/core/payment_methods/surcharge_decision_configs.rs,0,412,"use api_models::{
+    payment_methods::SurchargeDetailsResponse,
+    payments, routing,
+    surcharge_decision_configs::{self, SurchargeDecisionConfigs, SurchargeDecisionManagerRecord},
+};
+#[cfg(all(
+    any(feature = ""v1"", feature = ""v2""),
+    not(feature = ""payment_methods_v2"")
+))]
+use common_utils::{ext_traits::StringExt, types as common_utils_types};
+#[cfg(all(feature = ""v2"", feature = ""paymen...","
+        let cached_algorithm = backend::VirInterpreterBackend::with_program(value.algorithm)
+            .change_context(ConfigError::DslBackendInitError)
+            .attach_printable(""Error initializing DSL interpreter backend"")?;
+        let merchant_surcharge_configs = value.merchant_surcharge_configs;
+        Ok(Self {
+            cached_algorithm,
+            merchant_surcharge_configs,
+   ...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/core/payment_methods/surcharge_decision_configs.rs,1,1143,"use api_models::{
+    payment_methods::SurchargeDetailsResponse,
+    payments, routing,
+    surcharge_decision_configs::{self, SurchargeDecisionConfigs, SurchargeDecisionManagerRecord},
+};
+#[cfg(all(
+    any(feature = ""v1"", feature = ""v2""),
+    not(feature = ""payment_methods_v2"")
+))]
+use common_utils::{ext_traits::StringExt, types as common_utils_types};
+#[cfg(all(feature = ""v2"", feature = ""paymen...","
+        match self {
+            Self::Generate(interpreter) => {
+                let surcharge_output = execute_dsl_and_get_conditional_config(
+                    backend_input.clone(),
+                    &interpreter.cached_algorithm,
+                )?;
+                Ok(surcharge_output
+                    .surcharge_details
+                    .map(|surcharge_details| {
+                  ...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/core/payment_methods/surcharge_decision_configs.rs,2,13,"use api_models::{
+    payment_methods::SurchargeDetailsResponse,
+    payments, routing,
+    surcharge_decision_configs::{self, SurchargeDecisionConfigs, SurchargeDecisionManagerRecord},
+};
+#[cfg(all(
+    any(feature = ""v1"", feature = ""v2""),
+    not(feature = ""payment_methods_v2"")
+))]
+use common_utils::{ext_traits::StringExt, types as common_utils_types};
+#[cfg(all(feature = ""v2"", feature = ""paymen...","
+    todo!()
+","['', '', '']",0.0,0.0,0.0,0
+crates/storage_impl/src/mock_db.rs,0,1863,"use std::sync::Arc;
+
+use common_utils::{errors::CustomResult, types::keymanager::KeyManagerState};
+use diesel_models as store;
+use error_stack::ResultExt;
+use futures::lock::{Mutex, MutexGuard};
+use hyperswitch_domain_models::{
+    behaviour::{Conversion, ReverseConversion},
+    merchant_key_store::MerchantKeyStore,
+    payments::{payment_attempt::PaymentAttempt, PaymentIntent},
+};
+use redis_inter...","
+        Ok(Self {
+            addresses: Default::default(),
+            configs: Default::default(),
+            merchant_accounts: Default::default(),
+            merchant_connector_accounts: Default::default(),
+            payment_attempts: Default::default(),
+            payment_intents: Default::default(),
+            payment_methods: Default::default(),
+            customers: Default::defau...","['', '', '']",0.0,0.0,0.0,0
+crates/storage_impl/src/mock_db.rs,1,479,"use std::sync::Arc;
+
+use common_utils::{errors::CustomResult, types::keymanager::KeyManagerState};
+use diesel_models as store;
+use error_stack::ResultExt;
+use futures::lock::{Mutex, MutexGuard};
+use hyperswitch_domain_models::{
+    behaviour::{Conversion, ReverseConversion},
+    merchant_key_store::MerchantKeyStore,
+    payments::{payment_attempt::PaymentAttempt, PaymentIntent},
+};
+use redis_inter...","
+        let resource = resources.iter().find(filter_fn).cloned();
+        match resource {
+            Some(res) => Ok(res
+                .convert(
+                    state,
+                    key_store.key.get_inner(),
+                    key_store.merchant_id.clone().into(),
+                )
+                .await
+                .change_context(StorageError::DecryptionError)?),
+           ...","['', '', '']",0.0,0.0,0.0,0
+crates/storage_impl/src/mock_db.rs,2,791,"use std::sync::Arc;
+
+use common_utils::{errors::CustomResult, types::keymanager::KeyManagerState};
+use diesel_models as store;
+use error_stack::ResultExt;
+use futures::lock::{Mutex, MutexGuard};
+use hyperswitch_domain_models::{
+    behaviour::{Conversion, ReverseConversion},
+    merchant_key_store::MerchantKeyStore,
+    payments::{payment_attempt::PaymentAttempt, PaymentIntent},
+};
+use redis_inter...","
+        let resources: Vec<_> = resources.iter().filter(filter_fn).cloned().collect();
+        if resources.is_empty() {
+            Err(StorageError::ValueNotFound(error_message).into())
+        } else {
+            let pm_futures = resources
+                .into_iter()
+                .map(|pm| async {
+                    pm.convert(
+                        state,
+                        key_s...","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/id_type/global_id/customer.rs,0,38,"use error_stack::ResultExt;
+
+use crate::{errors, generate_id_with_default_len, generate_time_ordered_id_without_prefix, types};
+
+crate::global_id_type!(
+    GlobalCustomerId,
+    ""A global id that can be used to identify a customer.
+
+The format will be `<cell_id>_<entity_prefix>_<time_ordered_id>`.
+
+Example: `cell1_cus_uu1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p`""
+);
+
+// Database related implementations so...","
+        self.0.get_string_repr()
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/id_type/global_id/customer.rs,1,120,"use error_stack::ResultExt;
+
+use crate::{errors, generate_id_with_default_len, generate_time_ordered_id_without_prefix, types};
+
+crate::global_id_type!(
+    GlobalCustomerId,
+    ""A global id that can be used to identify a customer.
+
+The format will be `<cell_id>_<entity_prefix>_<time_ordered_id>`.
+
+Example: `cell1_cus_uu1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p`""
+);
+
+// Database related implementations so...","
+        let global_id = super::GlobalId::generate(cell_id, super::GlobalEntity::Customer);
+        Self(global_id)
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/id_type/global_id/customer.rs,2,88,"use error_stack::ResultExt;
+
+use crate::{errors, generate_id_with_default_len, generate_time_ordered_id_without_prefix, types};
+
+crate::global_id_type!(
+    GlobalCustomerId,
+    ""A global id that can be used to identify a customer.
+
+The format will be `<cell_id>_<entity_prefix>_<time_ordered_id>`.
+
+Example: `cell1_cus_uu1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p`""
+);
+
+// Database related implementations so...","
+        Self::try_from(std::borrow::Cow::from(value.get_string_repr().to_owned()))
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/router/tests/connectors/recurly.rs,0,231,"use hyperswitch_domain_models::payment_method_data::{Card, PaymentMethodData};
+use masking::Secret;
+use router::types::{self, api, storage::enums};
+use test_utils::connector_auth;
+
+use crate::utils::{self, ConnectorActions};
+
+#[derive(Clone, Copy)]
+struct RecurlyTest;
+impl ConnectorActions for RecurlyTest {}
+impl utils::Connector for RecurlyTest {
+    fn get_data(&self) -> api::ConnectorData {","
+        use router::connector::Recurly;
+        utils::construct_connector_data_old(
+            Box::new(Recurly::new()),
+            types::Connector::Plaid,
+            api::GetToken::Connector,
+            None,
+        )
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/router/tests/connectors/recurly.rs,1,237,"use hyperswitch_domain_models::payment_method_data::{Card, PaymentMethodData};
+use masking::Secret;
+use router::types::{self, api, storage::enums};
+use test_utils::connector_auth;
+
+use crate::utils::{self, ConnectorActions};
+
+#[derive(Clone, Copy)]
+struct RecurlyTest;
+impl ConnectorActions for RecurlyTest {}
+impl utils::Connector for RecurlyTest {
+    fn get_data(&self) -> api::ConnectorData {
+   ...","
+        utils::to_connector_auth_type(
+            connector_auth::ConnectorAuthentication::new()
+                .recurly
+                .expect(""Missing connector authentication configuration"")
+                .into(),
+        )
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/router/tests/connectors/recurly.rs,2,35,"use hyperswitch_domain_models::payment_method_data::{Card, PaymentMethodData};
+use masking::Secret;
+use router::types::{self, api, storage::enums};
+use test_utils::connector_auth;
+
+use crate::utils::{self, ConnectorActions};
+
+#[derive(Clone, Copy)]
+struct RecurlyTest;
+impl ConnectorActions for RecurlyTest {}
+impl utils::Connector for RecurlyTest {
+    fn get_data(&self) -> api::ConnectorData {
+   ...","
+        ""Recurly"".to_string()
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/services/api/request.rs,0,822,"use std::str::FromStr;
+
+pub use common_utils::request::ContentType;
+use common_utils::request::Headers;
+use error_stack::ResultExt;
+pub use masking::{Mask, Maskable};
+use router_env::{instrument, tracing};
+
+use crate::core::errors::{self, CustomResult};
+
+pub(super) trait HeaderExt {
+    fn construct_header_map(
+        self,
+    ) -> CustomResult<reqwest::header::HeaderMap, errors::ApiClientError>...","
+    fn construct_header_map(
+        self,
+    ) -> CustomResult<reqwest::header::HeaderMap, errors::ApiClientError> {
+        use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
+
+        self.into_iter().try_fold(
+            HeaderMap::new(),
+            |mut header_map, (header_name, header_value)| {
+                let header_name = HeaderName::from_str(&header_name)
+                  ...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/services/api/request.rs,1,162,"use std::str::FromStr;
+
+pub use common_utils::request::ContentType;
+use common_utils::request::Headers;
+use error_stack::ResultExt;
+pub use masking::{Mask, Maskable};
+use router_env::{instrument, tracing};
+
+use crate::core::errors::{self, CustomResult};
+
+pub(super) trait HeaderExt {
+    fn construct_header_map(
+        self,
+    ) -> CustomResult<reqwest::header::HeaderMap, errors::ApiClientError>...","
+    #[instrument(skip_all)]
+    fn add_headers(mut self, headers: reqwest::header::HeaderMap) -> Self {
+        self = self.headers(headers);
+        self
+    }
+","['', '', '']",0.0,0.0,0.0,0

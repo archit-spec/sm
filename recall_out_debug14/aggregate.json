@@ -1,0 +1,7 @@
+{
+  "masked_token_recall_mean": 0.09674160964483544,
+  "masked_exact_match_rate": 0.0,
+  "file_bleu_mean": 0.0,
+  "n_masked_records": 18,
+  "n_file_records": 10
+}

@@ -1,0 +1,19 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.env
+# Virtual environments
+.venv
+data/
+wandb/
+out2/
+*.safetensors
+*.pt
+*.pth
+fucsia/
+pretrained*
+pretrained_qwen_14b/

@@ -1,0 +1,1138 @@
+file,target_len,prompt_snippet,target_snippet,generations,best_bleu,best_recall,best_rougeL,exact_match_any
+src/screens/Helpers/TableSearchFilter.res,1019,"@react.component
+let make = (
+  ~data,
+  ~filterLogic=_ => {()},
+  ~placeholder,
+  ~searchVal,
+  ~setSearchVal,
+  ~customSearchBarWrapperWidth=""w-1/4"",
+  ~customInputBoxWidth=""w-72"",
+) => {
+  let filterData = React.useCallback(filterLogic, [])
+
+  React.u","seEffect(() => {
+    filterData((searchVal, data))
+    None
+  }, [searchVal])
+
+  let onChange = ev => {
+    let value = ReactEvent.Form.target(ev)[""value""]
+    setSearchVal(_ => value)
+  }
+
+  let handleSubmit = (_, _) => {Nullable.null->Promise.resolve}
+
+  let inputSearch: ReactFinalForm.fieldRenderPropsInput = {
+    name: ""search"",
+    onBlur: _ => (),
+    onChange,
+    onFocus: _ => (),
+    valu...","['', '', '']",0.0,0.0,0.0,0
+crates/hyperswitch_domain_models/src/customer.rs,15521,"#[cfg(all(feature = ""v2"", feature = ""customer_v2""))]
+use common_enums::DeleteStatus;
+use common_utils::{
+    crypto::{self, Encryptable},
+    date_time,
+    encryption::Encryption,
+    errors::{CustomResult, ValidationError},
+    id_type, pii,
+    types::{
+        keymanager::{self, KeyManagerState, ToEncryptable},
+        Description,
+    },
+};
+use diesel_models::customers::CustomerUpdateInternal...","f()
+            .and_then(|connector_customer_map| connector_customer_map.get(merchant_connector_id))
+            .map(|connector_customer_id| connector_customer_id.as_str())
+    }
+}
+
+#[cfg(all(any(feature = ""v1"", feature = ""v2""), not(feature = ""customer_v2"")))]
+#[async_trait::async_trait]
+impl super::behaviour::Conversion for Customer {
+    type DstType = diesel_models::customers::Customer;
+    t...","['', '', '']",0.0,0.0,0.0,0
+crates/router/tests/connectors/zsl.rs,1391,"use router::types::{self, storage::enums};
+use test_utils::connector_auth;
+
+use crate::utils::{self, ConnectorActions};
+
+struct ZslTest;
+impl ConnectorActions for ZslTest {}
+impl utils::Connector for ZslTest {
+    fn get_data(&self) -> types::api::ConnectorData {
+        use router::connector::Zsl;
+        utils::construct_connector_data_old(
+  ","          Box::new(&Zsl),
+            types::Connector::Adyen,
+            // Added as Dummy connector as template code is added for future usage
+            types::api::GetToken::Connector,
+            None,
+        )
+    }
+
+    fn get_auth_token(&self) -> types::ConnectorAuthType {
+        utils::to_connector_auth_type(
+            connector_auth::ConnectorAuthentication::new()
+                ....","['', '', '']",0.0,0.0,0.0,0
+crates/analytics/src/disputes/filters.rs,1490,"use api_models::analytics::{disputes::DisputeDimensions, Granularity, TimeRange};
+use common_utils::errors::ReportSwitchExt;
+use diesel_models::enums::Currency;
+use error_stack::ResultExt;
+use time::PrimitiveDateTime;
+
+use crate::{
+    enums::AuthInfo,
+    query::{Aggregate, GroupByClause, QueryBuilder, QueryFilter, ToSql, Window},
+    types::{
+        AnalyticsCollecti","on, AnalyticsDataSource, DBEnumWrapper, FiltersError, FiltersResult,
+        LoadRow,
+    },
+};
+pub trait DisputeFilterAnalytics: LoadRow<DisputeFilterRow> {}
+
+pub async fn get_dispute_filter_for_dimension<T>(
+    dimension: DisputeDimensions,
+    auth: &AuthInfo,
+    time_range: &TimeRange,
+    pool: &T,
+) -> FiltersResult<Vec<DisputeFilterRow>>
+where
+    T: AnalyticsDataSource + DisputeFilterAna...","['', '', '']",0.0,0.0,0.0,0
+src/screens/Sidebar/Sidebar.res,17846,"open HeadlessUI
+open SidebarTypes
+
+let defaultLinkSelectionCheck = (firstPart, tabLink) => {
+  firstPart->LogicUtils.removeTrailingSlash === tabLink->LogicUtils.removeTrailingSlash
+}
+
+let getIconSize = buttonType => {
+  switch buttonType {
+  | ""large"" => 42
+  | ""larger"" => 65
+  | _ => 20
+  }
+}
+
+module MenuOption = {
+  @react.component
+  let make = (~text=?, ~children=?, ~onClick=?) => {
+    let {g...","r} flex flex-row items-center cursor-pointer ${selectedClass} p-3`}>
+            {switch selectedIcon {
+            | Some(selectedIcon) =>
+              <SidebarOption name icon isSidebarExpanded isSelected selectedIcon />
+            | None => <SidebarOption name icon isSidebarExpanded isSelected />
+            }}
+            remoteUi
+          </a>
+        </RenderIf>
+      }
+
+    | LinkWithTag...","['', '', '']",0.0,0.0,0.0,0
+src/Recon/ReconScreens/ReconConfiguration/ConnectProcessors/ConnectProcessorsHelper.res,6644,"open HSwitchUtils
+let p1MediumTextStyle = HSwitchUtils.getTextClass((P1, Medium))
+let p1RegularText = getTextClass((P1, Regular))
+
+let generateDropdownOptionsCustomComponent: array<OMPSwitchTypes.ompListTypes> => array<
+  SelectBox.dropdownOption,
+> = dropdownList => {
+  let options: array<SelectBox.dropdownOption> = dropdownList->Array.map((
+    item
+  ): SelectBox.dropdownOption => {
+    let opt...",">String.toUpperCase} className=""w-6 h-6"" />
+          <p
+            className=""overflow-scroll text-nowrap text-sm font-medium text-nd_gray-500 whitespace-pre  "">
+            {subHeading->React.string}
+          </p>
+        </RenderIf>
+        <RenderIf condition={subHeading->String.length == 0}>
+          <p
+            className=""overflow-scroll text-nowrap text-sm font-medium text-nd_gray-500...","['', '', '']",0.0,0.0,0.0,0
+crates/analytics/src/refunds/metrics.rs,4161,"use api_models::analytics::{
+    refunds::{
+        RefundDimensions, RefundFilters, RefundMetrics, RefundMetricsBucketIdentifier, RefundType,
+    },
+    Granularity, TimeRange,
+};
+use diesel_models::enums as storage_enums;
+use time::PrimitiveDateTime;
+mod refund_count;
+mod refund_processed_amount;
+mod refund_success_count;
+mod refund_success_rate;
+mod sessionized_metrics;
+use std::collections::Ha...","efund_type: Option<DBEnumWrapper<RefundType>>,
+    pub profile_id: Option<String>,
+    pub refund_reason: Option<String>,
+    pub refund_error_message: Option<String>,
+    pub total: Option<bigdecimal::BigDecimal>,
+    pub count: Option<i64>,
+    #[serde(with = ""common_utils::custom_serde::iso8601::option"")]
+    pub start_bucket: Option<PrimitiveDateTime>,
+    #[serde(with = ""common_utils::custom_...","['', '', '']",0.0,0.0,0.0,0
+crates/api_models/src/routing.rs,19726,"use std::fmt::Debug;
+
+use common_utils::{errors::ParsingError, ext_traits::ValueExt, pii};
+pub use euclid::{
+    dssa::types::EuclidAnalysable,
+    frontend::{
+        ast,
+        dir::{DirKeyKind, EuclidDirFilter},
+    },
+};
+use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
+
+use crate::enums::{RoutableConnectors, TransactionType};
+
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema...","}
+}
+
+impl Eq for RoutableConnectorChoice {}
+
+impl From<RoutableChoiceSerde> for RoutableConnectorChoice {
+    fn from(value: RoutableChoiceSerde) -> Self {
+        match value {
+            RoutableChoiceSerde::OnlyConnector(connector) => Self {
+                choice_kind: RoutableChoiceKind::OnlyConnector,
+                connector: *connector,
+                merchant_connector_id: None,
+      ...","['', '', '']",0.0,0.0,0.0,0
+src/fragments/ConnectorFragments/ConnectorPaymentMethodv2/PMSelectAll.res,4764,"module PMSelectAll = {
+  @react.component
+  let make = (
+    ~availablePM: array<ConnectorTypes.paymentMethodConfigTypeV2>,
+    ~fieldsArray: array<ReactFinalForm.fieldRenderProps>,
+    ~pm,
+    ~pmt,
+  ) => {
+    open LogicUtils
+    open ConnectorPaymentMethodV2Utils
+    let pmEnabledInp = (fieldsArray[0]->Option.getOr(ReactFinalForm.fakeFieldRenderProps)).input
+    let pmEnabledValue =
+      pmE...","        (""payment_method_subtypes"", updatePMTData->Identity.genericTypeToJson),
+          ]
+          ->Dict.fromArray
+          ->Identity.anyTypeToReactEvent
+        pmArrayInp.onChange(updatedData)
+      } else if pm->getPMFromString == Card && pmt->getPMTFromString == Debit {
+        let pmtData = pmEnabledValue->Array.find(ele => ele.payment_method_type == pm)
+        let updatePMTData = swit...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/db/api_keys.rs,15186,"use error_stack::report;
+use router_env::{instrument, tracing};
+#[cfg(feature = ""accounts_cache"")]
+use storage_impl::redis::cache::{self, CacheKind, ACCOUNTS_CACHE};
+
+use super::{MockDb, Store};
+use crate::{
+    connection,
+    core::errors::{self, CustomResult},
+    types::storage,
+};
+
+#[async_trait::async_trait]
+pub trait ApiKeyInterface {
+    async fn insert_api_key(
+        &self,
+        api_...","      }
+    }
+
+    #[instrument(skip_all)]
+    async fn revoke_api_key(
+        &self,
+        merchant_id: &common_utils::id_type::MerchantId,
+        key_id: &common_utils::id_type::ApiKeyId,
+    ) -> CustomResult<bool, errors::StorageError> {
+        let conn = connection::pg_connection_write(self).await?;
+        let delete_call = || async {
+            storage::ApiKey::revoke_by_merchant_id_k...","['', '', '']",0.0,0.0,0.0,0
+crates/api_models/src/feature_matrix.rs,3158,"use std::collections::HashSet;
+
+use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
+
+#[derive(Default, Debug, Deserialize, Serialize, Clone, ToSchema)]
+pub struct FeatureMatrixRequest {
+    // List of connectors for which the feature matrix is requested
+    #[schema(value_type = Option<Vec<Connector>>)]
+    pub connectors: Option<Vec<common_enums::connector_enums::Connector>>,
+}
+
+#[derive(D...","ist of supported card networks
+    #[schema(value_type = Vec<CardNetwork>)]
+    pub supported_card_networks: Vec<common_enums::CardNetwork>,
+}
+
+#[derive(Debug, Clone, ToSchema, Serialize)]
+#[serde(untagged)]
+pub enum PaymentMethodSpecificFeatures {
+    /// Card specific features
+    Card(CardSpecificFeatures),
+}
+
+#[derive(Debug, ToSchema, Serialize)]
+pub struct SupportedPaymentMethod {
+    /// The...","['', '', '']",0.0,0.0,0.0,0
+src/screens/Connectors/PaymentProcessor/ConnectorWalletDetails/SamsungPay/SamsungPayIntegrationUtils.res,1300,"open SamsungPayIntegrationTypes
+open LogicUtils
+
+let samsungPayRequest = dict => {
+  merchant_business_country: dict->getString(""merchant_business_country"", """"),
+  merchant_display_name: dict->getString(""merchant_display_name"", """"),
+  service_id: dict->getString(""service_id"", """"),
+  allowed_brands: dict->getStrArrayFromDict","(
+    ""allowed_brands"",
+    [""visa"", ""masterCard"", ""amex"", ""discover""],
+  ),
+}
+
+let samsungPayNameMapper = (~name) => {
+  `connector_wallets_details.samsung_pay.merchant_credentials.${name}`
+}
+
+let samsungPayValueInput = (~samsungPayField: CommonConnectorTypes.inputField, ~fill) => {
+  open CommonConnectorHelper
+  let {\""type"", name} = samsungPayField
+  let formName = samsungPayNameMapper(~name)
+
+...","['', '', '']",0.0,0.0,0.0,0
+src/icons/ChevronIcon.res,186,"open ReactNative
+open Style
+
+@react.component
+","let make = (~width=20., ~height=16., ~fill=""#ffffff"") => {
+  <Icon
+    style={viewStyle(~transform=[rotate(~rotate=270.->deg)], ())}
+    name=""back""
+    height
+    width
+    fill
+  />
+}
+","['', '', '']",0.0,0.0,0.0,0
+src/hooks/CountryStateDataHookTypes.res,315,"type country = {
+  isoAlpha2: string,
+  timeZones: array<string>,
+  value: str","ing,
+  label: string,
+}
+type state = {
+  label: string,
+  value: string,
+  code: string,
+}
+type states = Dict.t<array<state>>
+type countries = array<country>
+type countryStateData = {
+  countries: countries,
+  states: states,
+}
+let defaultTimeZone = {
+  timeZones: [],
+  value: ""-"",
+  label: """",
+  isoAlpha2: """",
+}
+","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/types/api/configs.rs,237,"#[derive(Clone, serde::Serialize, Debug, serde::Deserialize",")]
+pub struct Config {
+    pub key: String,
+    pub value: String,
+}
+
+#[derive(Clone, serde::Deserialize, Debug, serde::Serialize)]
+pub struct ConfigUpdate {
+    #[serde(skip_deserializing)]
+    pub key: String,
+    pub value: String,
+}
+","['', '', '']",0.0,0.0,0.0,0
+src/RevenueRecovery/RevenueRecoveryScreens/RecoveryProcessors/RevenueRecoveryBillingProcessors/RecoveryOnboardingBilling.res,5952,"@react.component
+let make = (
+  ~currentStep,
+  ~connectorID,
+  ~connector,
+  ~paymentConnectorName,
+  ~setConnectorName,
+  ~setNextStep,
+  ~profileId,
+  ~merchantId,
+  ~activeBusinessProfile,
+) => {
+  open APIUtils
+  open LogicUtils
+  open ConnectorUtils
+  open PageLoaderWrapper
+  open RevenueRecoveryOnboardingUtils
+
+  let getURL = useGetURL()
+  let mixpanelEvent = MixpanelHook.useSendEvent()
+  l...","ector_label"",
+      `${connector}_${activeBusinessProfile}`->JSON.Encode.string,
+    )
+    initialValuesToDict->Dict.set(""connector_type"", ""billing_processor""->JSON.Encode.string)
+    initialValuesToDict->Dict.set(""profile_id"", profileId->JSON.Encode.string)
+    initialValuesToDict->Dict.set(
+      ""connector_account_details"",
+      RevenueRecoveryData.connector_account_details,
+    )
+    initialV...","['', '', '']",0.0,0.0,0.0,0
+src/screens/Connectors/PaymentProcessor/ConnectorMetaData/ApplePay/ApplePaySimplifiedFlow.res,5113,"open ApplePayIntegrationTypes
+@react.component
+let make = (
+  ~applePayFields,
+  ~merchantBusinessCountry,
+  ~setApplePayIntegrationSteps,
+  ~setVefifiedDomainList,
+  ~connector,
+) => {
+  open LogicUtils
+  open APIUtils
+  open ApplePayIntegrationHelper
+  open ApplePayIntegrationUtils
+  let getURL = useGetURL()
+  let updateAPIHook = useUpdateMethod(~showErrorToast=false)
+  let fetchApi = AuthHooks....","seEffect(() => {
+    setFormData()
+    None
+  }, [])
+  let onSubmit = async () => {
+    try {
+      let body = formState.values->constructVerifyApplePayReq(connectorID)
+      let verifyAppleUrl = getURL(~entityName=V1(VERIFY_APPLE_PAY), ~methodType=Post)
+      let _ = await updateAPIHook(`${verifyAppleUrl}/${merchantId}`, body, Post)
+
+      let data =
+        formState.values
+        ->getDictFrom...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/core/mandate/utils.rs,2765,"use std::marker::PhantomData;
+
+use common_utils::{errors::CustomResult, ext_traits::ValueExt};
+use diesel_models::Mandate;
+use error_stack::ResultExt;
+
+use crate::{
+    core::{errors, payments::helpers},
+    types::{self, domain, PaymentAddress},
+    SessionState,
+};
+
+const IRRELEVANT_ATTEMPT_ID_IN_MANDATE_REVOKE_FLOW: &str =
+    ""irrelevant_attempt_id_in_mandate_revoke_flow"";
+
+const IRRELEVANT_CO...","nt_account: &domain::MerchantAccount,
+    mandate: Mandate,
+) -> CustomResult<types::MandateRevokeRouterData, errors::ApiErrorResponse> {
+    let auth_type: types::ConnectorAuthType = merchant_connector_account
+        .get_connector_account_details()
+        .parse_value(""ConnectorAuthType"")
+        .change_context(errors::ApiErrorResponse::InternalServerError)?;
+    let router_data = types::Rout...","['', '', '']",0.0,0.0,0.0,0
+crates/analytics/src/errors.rs,1226,"use api_models::errors::types::{ApiError, ApiErrorResponse};
+use common_utils::errors::{CustomResult, ErrorSwitch};
+
+pub type AnalyticsResult<T> = CustomResult<T, AnalyticsError>;
+
+#[derive(Debug, Clone, serde::Serialize, thiserror::Error)]
+pub enum AnalyticsError {
+    #[allow(dead_code)]
+    #[error(""No","t implemented: {0}"")]
+    NotImplemented(&'static str),
+    #[error(""Unknown Analytics Error"")]
+    UnknownError,
+    #[error(""Access Forbidden Analytics Error"")]
+    AccessForbiddenError,
+    #[error(""Failed to fetch currency exchange rate"")]
+    ForexFetchFailed,
+}
+
+impl ErrorSwitch<ApiErrorResponse> for AnalyticsError {
+    fn switch(&self) -> ApiErrorResponse {
+        match self {
+           ...","['', '', '']",0.0,0.0,0.0,0
+src/screens/Hooks/OMPCreateAccessHook.res,472,"type adminType = [#tenant_admin | #org_admin | #merchant_admin | #non_admin]
+
+let roleIdVariantMapper: string => admin","Type = roleId => {
+  switch roleId {
+  | ""tenant_admin"" => #tenant_admin
+  | ""org_admin"" => #org_admin
+  | ""merchant_admin"" => #merchant_admin
+  | _ => #non_admin
+  }
+}
+
+let useOMPCreateAccessHook: array<adminType> => CommonAuthTypes.authorization = allowedRoles => {
+  let {userInfo: {roleId}} = React.useContext(UserInfoProvider.defaultContext)
+  let roleIdTypedValue = roleId->roleIdVariantMapper
+...","['', '', '']",0.0,0.0,0.0,0
+src/Payments/PlaidSDKIframe.res,3510,"@react.component
+let make = () => {
+  open Utils
+
+  let (linkToken, setLinkToken) = React.useState(_ => """")
+  let (isReady, setIsReady) = React.useState(_ => false)
+  let (pmAuthConnectorsArr, setPmAuthConnectorsArr) = React.useState(_ => [])
+  let (publishableKey, setPublishableKey) = React.useState(_ => """")
+  let (clientSecret, setClientSecret) = React.useState(_ => """")
+  let (isForceSync, setIs...","oken->String.length > 0 {
+        setLinkToken(_ => linkToken)
+        setPmAuthConnectorsArr(_ =>
+          metaData->getArray(""pmAuthConnectorArray"")->Array.map(JSON.Decode.string)
+        )
+        setPublishableKey(_ => metaData->getString(""publishableKey"", """"))
+        setClientSecret(_ => metaData->getString(""clientSecret"", """"))
+        setIsForceSync(_ => metaData->getBool(""isForceSync"", fa...","['', '', '']",0.0,0.0,0.0,0
+crates/external_services/src/email/no_email.rs,843,"use common_utils::{errors::CustomResult, pii};
+use router_env::logger;
+
+use crate::email::{EmailClient, EmailError, EmailResult, IntermediateString};
+
+/// Client when email support is disabled
+#[derive(Debug, C","lone, Default, serde::Deserialize)]
+pub struct NoEmailClient {}
+
+impl NoEmailClient {
+    /// Constructs a new client when email is disabled
+    pub async fn create() -> Self {
+        Self {}
+    }
+}
+
+#[async_trait::async_trait]
+impl EmailClient for NoEmailClient {
+    type RichText = String;
+    fn convert_to_rich_text(
+        &self,
+        intermediate_string: IntermediateString,
+    ) -> Cus...","['', '', '']",0.0,0.0,0.0,0
+src/screens/Connectors/PMAuthenticationProcessor/PMAuthenticationHome.res,9895,"module MenuOption = {
+  open HeadlessUI
+  @react.component
+  let make = (~disableConnector, ~isConnectorDisabled) => {
+    let showPopUp = PopUpState.useShowPopUp()
+    let openConfirmationPopUp = _ => {
+      showPopUp({
+        popUpType: (Warning, WithIcon),
+        heading: ""Confirm Action?"",
+        description: `You are about to ${isConnectorDisabled
+            ? ""Enable""
+            : ""Dis...","nectorListResponse = ConnectorListHook.useFetchConnectorList()
+
+  let activeBusinessProfile =
+    Recoil.useRecoilValueFromAtom(
+      HyperswitchAtom.businessProfilesAtom,
+    )->MerchantAccountUtils.getValueFromBusinessProfile
+
+  let isUpdateFlow = switch url.path->HSwitchUtils.urlPath {
+  | list{""pm-authentication-processor"", ""new""} => false
+  | _ => true
+  }
+
+  let connectorInfo = ConnectorInt...","['', '', '']",0.0,0.0,0.0,0
+src/Recon/ReconScreens/ReconReports/ReconReportsList.res,4040,"@react.component
+let make = () => {
+  open LogicUtils
+  let (offset, setOffset) = React.useState(_ => 0)
+  let {userHasAccess} = GroupACLHooks.useUserGroupACLHook()
+  let (selectedId, setSelectedId) = React.useState(_ =>
+    Dict.make()->ReconReportUtils.getAllReportPayloadType
+  )
+  let (showModal, setShowModal) = React.useState(_ => false)
+  let (searchText, setSearchText) = React.useState(_ => ...","     ~xFeatureRoute=false,
+        ~forceCookies=false,
+      )
+      let response = await allReportsResponse->(res => res->Fetch.Response.json)
+      let data = response->getDictFromJsonObject->getArrayFromDict(""data"", [])
+      let reportsList = data->ReconReportUtils.getArrayOfReportsListPayloadType
+      setConfiguredReports(_ => reportsList)
+      setFilteredReports(_ => reportsList->Array.ma...","['', '', '']",0.0,0.0,0.0,0
+src/screens/Analytics/PerformanceMonitor/GaugeChart/CustomGraphs/GaugeFailureRateUtils.res,1936,"open PerformanceMonitorTypes
+
+let getFailureRateData = (~args) => {
+  let count = args.optionalArgs->Option.getOr(0.0)
+  let failureCount = GaugeChartPerformanceUtils.getGaugeData(~args).value
+
+  let rate = failureCount /. count *. 100.0
+  let value: PerformanceMonitorTypes.gaugeData = {value: rate}
+  value
+}
+let falureGaugeOption = (data: gaugeData) =>
+  {
+    ""chart"": {
+      ""type"": ""gauge"",
+  ...","erWidth"": 0,
+      ""plotShadow"": false,
+      ""height"": ""75%"",
+    },
+    ""pane"": {
+      ""startAngle"": -90,
+      ""endAngle"": 89.9,
+      ""background"": null,
+      ""center"": [""50%"", ""75%""],
+      ""size"": ""110%"",
+    },
+    ""yAxis"": {
+      ""min"": 0,
+      ""max"": 100,
+      ""tickPixelInterval"": 72,
+      ""tickPosition"": ""inside"",
+      ""tickColor"": ""#FFFFFF"",
+      ""tickLength"": 20,
+      ""tickWid...","['', '', '']",0.0,0.0,0.0,0
+src/Components/EmailPaymentInput.res,1544,"open RecoilAtoms
+open Utils
+
+@react.component
+let make = (~paymentType) => {
+  let {localeString} = Recoil.useRecoilValueFromAtom(configAtom)
+  let loggerState = Recoil.useRecoilValueFromAtom(loggerAtom)
+  let (email, setEmail) = Recoil.useLoggedRecoilState(userEmailAddress, ""email"", loggerState)
+  let {fields} = Recoil.useRecoilValueFromAtom(optionAtom)
+
+  let showDetails = PaymentT","ype.getShowDetails(
+    ~billingDetails=fields.billingDetails,
+    ~logger=loggerState,
+  )
+
+  let emailRef = React.useRef(Nullable.null)
+
+  let changeEmail = ev => {
+    let val: string = ReactEvent.Form.target(ev)[""value""]
+    setEmail(prev => {
+      value: val,
+      isValid: val->isEmailValid,
+      errorString: val->isEmailValid->Option.getOr(false) ? """" : prev.errorString,
+    })
+  }
+  let ...","['', '', '']",0.0,0.0,0.0,0
+src/screens/Connectors/PaymentProcessor/ConnectorUIUtils/PaymentMethod.res,14560,"let isSelectedAll = (
+  selectedPaymentMethod: array<ConnectorTypes.paymentMethodEnabled>,
+  allPaymentMethods,
+  paymentMethod,
+) => {
+  open ConnectorUtils
+  let paymentMethodObj = selectedPaymentMethod->getSelectedPaymentObj(paymentMethod)
+  switch paymentMethod->getPaymentMethodFromString {
+  | Card =>
+    paymentMethodObj.card_provider->Option.getOr([])->Array.length ==
+      allPaymentMethod...","
+          | Processors(STRIPE_TEST) => false
+          | _ => true
+          }
+        }) || (paymentMethod->getPaymentMethodFromString === BankDebit && shouldShowPMAuthSidebar)
+    }
+
+    let removeOrAddMethods = (method: paymentMethodConfigType) => {
+      switch (
+        method.payment_method_type->getPaymentMethodTypeFromString,
+        paymentMethod->getPaymentMethodFromString,
+        conn...","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/id_type/global_id/payment_methods.rs,4240,"use error_stack::ResultExt;
+
+use crate::{
+    errors::CustomResult,
+    id_type::global_id::{CellId, GlobalEntity, GlobalId},
+};
+
+/// A global id that can be used to identify a payment method
+#[derive(
+    Debug,
+    Clone,
+    Hash,
+    PartialEq,
+    Eq,
+    serde::Serialize,
+    serde::Deserialize,
+    diesel::expression::AsExpression,
+)]
+#[diesel(sql_type = diesel::sql_types::Text)]
+pub struct...","onstruct GlobalPaymentMethodSessionId"")]
+    ConstructionError,
+}
+
+impl GlobalPaymentMethodSessionId {
+    /// Create a new GlobalPaymentMethodSessionId from cell id information
+    pub fn generate(
+        cell_id: &CellId,
+    ) -> error_stack::Result<Self, GlobalPaymentMethodSessionIdError> {
+        let global_id = GlobalId::generate(cell_id, GlobalEntity::PaymentMethodSession);
+        Ok(Sel...","['', '', '']",0.0,0.0,0.0,0
+src/RevenueRecovery/RevenueRecoveryScreens/RecoveryProcessors/RevenueRecoveryBillingProcessors/BillingProcessorsReviewDetails.res,2767,"module StepCard = {
+  @react.component
+  let make = (
+    ~stepName,
+    ~description="""",
+    ~isSelected,
+    ~onClick,
+    ~iconName,
+    ~isLoading=false,
+    ~customSelectionComponent,
+    ~customOuterClass="""",
+    ~customSelectionBorderClass=?,
+    ~isDisabled=false,
+  ) => {
+    let borderClass = switch (customSelectionBorderClass, isSelected) {
+    | (Some(val), true) => val
+    | (_, true)...","dow justify-between w-full ${borderClass}  ${disabledClass} ${customOuterClass}`}
+      onClick={onClick}>
+      <div className=""flex flex-row items-center gap-x-4 mr-5"">
+        <Icon name=iconName className=""w-8 h-8"" />
+        <div className=""flex flex-col gap-1"">
+          <h3 className=""text-sm font-semibold text-nd_gray-600 leading-5"">
+            {stepName->React.string}
+          </h3>
+   ...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/core/payment_methods/cards.rs,25236,"use std::{
+    collections::{HashMap, HashSet},
+    fmt::Debug,
+    str::FromStr,
+};
+
+#[cfg(all(
+    any(feature = ""v1"", feature = ""v2""),
+    not(feature = ""payment_methods_v2"")
+))]
+use api_models::admin::PaymentMethodsEnabled;
+use api_models::{
+    enums as api_enums,
+    payment_methods::{
+        BankAccountTokenData, Card, CardDetailUpdate, CardDetailsPaymentMethod, CardNetworkTypes,
+        C...","chant_account.get_id(),
+            &key_store,
+            merchant_account.storage_scheme,
+        )
+        .await
+        .to_not_found_response(errors::ApiErrorResponse::CustomerNotFound)?;
+
+    let client_secret_expired =
+        authenticate_pm_client_secret_and_check_expiry(&client_secret, &payment_method)?;
+
+    if client_secret_expired {
+        return Err((errors::ApiErrorResponse::Clie...","['', '', '']",0.0,0.0,0.0,0
+crates/router/tests/connectors/payme.rs,15274,"use std::str::FromStr;
+
+use common_utils::{pii::Email, types::MinorUnit};
+use diesel_models::types::OrderDetailsWithAmount;
+use hyperswitch_domain_models::address::{Address, AddressDetails};
+use masking::Secret;
+use router::types::{self, domain, storage::enums, PaymentAddress};
+
+use crate::{
+    connector_auth,
+    utils::{self, ConnectorActions, PaymentAuthorizeType},
+};
+
+#[derive(Clone, Copy)]
+s...","payment response"");
+    assert_eq!(response.status, enums::AttemptStatus::Authorized);
+}
+
+// Captures a payment using the manual capture flow (Non 3DS).
+#[actix_web::test]
+async fn should_capture_authorized_payment() {
+    let response = CONNECTOR
+        .authorize_and_capture_payment(payment_method_details(), None, get_default_payment_info())
+        .await
+        .expect(""Capture payment respo...","['', '', '']",0.0,0.0,0.0,0
+src/components/HSwitchFeedBackModalUtils.res,1681,"type modalType = FeedBackModal | RequestConnectorModal
+
+let makeFieldInfo = FormRenderer.makeFieldInfo
+
+let feedbackTextBox = makeFieldInfo(
+  ~label="""",
+  ~name=""feedbacks"",
+  ~placeholder=""Tell us in words..."",
+  ~customInput=InputFields.multiLineTextInput(~isDisabled=false, ~rows=Some(6), ~cols=Some(4)),
+)
+
+type feedbackType = Suggestion | Bugs | RequestConnector | Other
+
+let feedbackTypeList =...","Other]
+
+let getFeedBackStringFromVariant = feedbackType => {
+  switch feedbackType {
+  | Suggestion => ""Suggestion""
+  | Bugs => ""Bugs""
+  | RequestConnector => ""Request A Connector""
+  | Other => ""Other""
+  }
+}
+
+let selectFeedbackType = makeFieldInfo(
+  ~name=""category"",
+  ~label="""",
+  ~customInput=InputFields.radioInput(
+    ~options=feedbackTypeList->Array.map(getFeedBackStringFromVariant)->SelectB...","['', '', '']",0.0,0.0,0.0,0
+src/entryPoints/AuthModule/AuthProviderTypes.res,225,"type preLoginType = {
+  token: option<string>,
+  token_t","ype: string,
+  email_token: option<string>,
+}
+
+type authInfo = {token: option<string>}
+
+type authType = Auth(authInfo)
+
+type authStatus =
+  | LoggedOut
+  | PreLogin(preLoginType)
+  | LoggedIn(authType)
+  | CheckingAuthStatus
+","['', '', '']",0.0,0.0,0.0,0
+crates/api_models/src/webhook_events.rs,6255,"use common_enums::{EventClass, EventType, WebhookDeliveryAttempt};
+use masking::Secret;
+use serde::{Deserialize, Serialize};
+use time::PrimitiveDateTime;
+use utoipa::ToSchema;
+
+/// The constraints to apply when filtering events.
+#[derive(Clone, Debug, Serialize, Deserialize, ToSchema)]
+pub struct EventListConstraints {
+    /// Filter events created after the specified time.
+    #[serde(default, wi...","ivered: Option<bool>,
+    },
+    ObjectIdFilter {
+        object_id: String,
+    },
+}
+
+/// The response body for each item when listing events.
+#[derive(Debug, Serialize, ToSchema)]
+pub struct EventListItemResponse {
+    /// The identifier for the Event.
+    #[schema(max_length = 64, example = ""evt_018e31720d1b7a2b82677d3032cab959"")]
+    pub event_id: String,
+
+    /// The identifier for the Mercha...","['', '', '']",0.0,0.0,0.0,0
+src/types/SessionsType.res,3173,"open SdkTypes
+
+type samsungPaySession = {
+  wallet_name: string,
+  version: string,
+  service_id: string,
+  order_number: string,
+  merchant: JSON.t,
+  amount: JSON.t,
+  protocol: string,
+  allowed_brands: array<JSON.t>,
+}
+
+type sessions = {
+  wallet_name: payment_method_type_wallet,
+  session_token: string,
+  session_id: string,
+  merchant_info: JSON.t,
+  allowed_payment_methods: array<JSON.t>,
+ ...","nnector_merchant_id: JSON.t,
+  merchant: JSON.t,
+  order_number: string,
+  service_id: string,
+  amount: JSON.t,
+  protocol: string,
+  allowed_brands: array<JSON.t>,
+}
+let defaultToken = {
+  wallet_name: NONE,
+  session_token: """",
+  session_id: """",
+  merchant_info: JSON.Encode.null,
+  allowed_payment_methods: [],
+  transaction_info: JSON.Encode.null,
+  shipping_address_required: false,
+  billing_a...","['', '', '']",0.0,0.0,0.0,0
+src/screens/NewAnalytics/SmartRetryAnalytics/SuccessfulSmartRetryDistribution/SuccessfulSmartRetryDistribution.res,3902,"open NewAnalyticsTypes
+open NewAnalyticsHelper
+open BarGraphTypes
+open NewSmartRetryAnalyticsEntity
+open SuccessfulSmartRetryDistributionUtils
+open SuccessfulSmartRetryDistributionTypes
+
+module TableModule = {
+  @react.component
+  let make = (~data, ~className="""", ~selectedTab: string) => {
+    let (offset, setOffset) = React.useState(_ => 0)
+    let defaultSort: Table.sortedObject = {
+      key: ...","nt={tableData->Array.length}
+        tableLocalFilter=false
+        tableheadingClass=tableBorderClass
+        tableBorderClass
+        ignoreHeaderBg=true
+        tableDataBorderClass=tableBorderClass
+        isAnalyticsModule=true
+      />
+    </div>
+  }
+}
+
+module SuccessfulSmartRetryDistributionHeader = {
+  @react.component
+  let make = (~viewType, ~setViewType, ~groupBy, ~setGroupBy) => {
+    ...","['', '', '']",0.0,0.0,0.0,0
+src/Components/BillingNamePaymentInput.res,1928,"open RecoilAtoms
+open PaymentType
+open Utils
+
+@react.component
+let make = (~paymentType, ~customFieldName=None, ~requiredFields as optionalRequiredFields=?) => {
+  let {config, localeString} = Recoil.useRecoilValueFromAtom(configAtom)
+  let {fields} = Recoil.useRecoilValueFromAtom(optionAtom)
+  let loggerState = Recoil.useRecoilValueFromAtom(loggerAtom)
+
+  let (billingName, setBillingName) = Recoi...","  )
+
+  let showDetails = getShowDetails(~billingDetails=fields.billingDetails, ~logger=loggerState)
+
+  let changeName = ev => {
+    let val: string = ReactEvent.Form.target(ev)[""value""]
+    setBillingName(prev => {
+      value: val,
+      isValid: Some(val !== """"),
+      errorString: val !== """" ? """" : prev.errorString,
+    })
+  }
+  let onBlur = ev => {
+    let val: string = ReactEvent.Focus.target...","['', '', '']",0.0,0.0,0.0,0
+src/screens/Connectors/PaymentProcessor/ConnectorMetaData/GooglePay/GPayFlow/GPayFlowHelper.res,1642,"module Landing = {
+  @react.component
+  let make = (
+    ~googlePayIntegrationType,
+    ~closeModal,
+    ~setGooglePayIntegrationStep,
+    ~setGooglePayIntegrationType,
+  ) => {
+    open GPayFlowTypes
+    open AdditionalDetailsSidebarHelper
+    <>
+      <div
+        className=""p-6 m-2 cursor-pointer""
+        onClick={_ => setGooglePayIntegrationType(_ => #payment_gateway)}>
+        <Card heading=""...","teway"" isSelected={googlePayIntegrationType === #payment_gateway}>
+          <div className={` mt-2 text-base text-hyperswitch_black opacity-50 font-normal`}>
+            {""Integrate Google Pay with your payment gateway.""->React.string}
+          </div>
+          <div className=""flex gap-2 mt-4"">
+            <CustomTag tagText=""Faster Configuration"" tagSize=4 tagLeftIcon=Some(""ellipse-green"") />
+ ...","['', '', '']",0.0,0.0,0.0,0
+crates/api_models/src/events/locker_migration.rs,234,"use common_utils::events::ApiEventMetric;
+
+use crate::lock","er_migration::MigrateCardResponse;
+
+impl ApiEventMetric for MigrateCardResponse {
+    fn get_api_event_type(&self) -> Option<common_utils::events::ApiEventsType> {
+        Some(common_utils::events::ApiEventsType::RustLocker)
+    }
+}
+","['', '', '']",0.0,0.0,0.0,0
+src/components/MobileView.res,124,"@react.component
+let make = (~ch","ildren) => {
+  let isMobileView = MatchMedia.useMobileChecker()
+
+  <RenderIf condition=isMobileView> children </RenderIf>
+}
+","['', '', '']",0.0,0.0,0.0,0
+crates/router/tests/connectors/getnet.rs,11000,"use hyperswitch_domain_models::payment_method_data::{Card, PaymentMethodData};
+use masking::Secret;
+use router::types::{self, api, storage::enums};
+use test_utils::connector_auth;
+
+use crate::utils::{self, ConnectorActions};
+
+#[derive(Clone, Copy)]
+struct GetnetTest;
+impl ConnectorActions for GetnetTest {}
+impl utils::Connector for GetnetTest {
+    fn get_data(&self) -> api::ConnectorData {
+      ...","_payment(payment_method_details(), get_default_payment_info())
+        .await
+        .expect(""Authorize payment response"");
+    let txn_id = utils::get_connector_transaction_id(authorize_response.response);
+    let response = CONNECTOR
+        .psync_retry_till_status_matches(
+            enums::AttemptStatus::Authorized,
+            Some(types::PaymentsSyncData {
+                connector_transa...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/db/fraud_check.rs,3324,"use diesel_models::fraud_check::{self as storage, FraudCheck, FraudCheckUpdate};
+use error_stack::report;
+use router_env::{instrument, tracing};
+
+use super::MockDb;
+use crate::{
+    connection,
+    core::errors::{self, CustomResult},
+    services::Store,
+};
+
+#[async_trait::async_trait]
+pub trait FraudCheckInterface {
+    async fn insert_fraud_check_response(
+        &self,
+        new: storage::Fr...","antId,
+    ) -> CustomResult<FraudCheck, errors::StorageError>;
+
+    async fn find_fraud_check_by_payment_id_if_present(
+        &self,
+        payment_id: common_utils::id_type::PaymentId,
+        merchant_id: common_utils::id_type::MerchantId,
+    ) -> CustomResult<Option<FraudCheck>, errors::StorageError>;
+}
+
+#[async_trait::async_trait]
+impl FraudCheckInterface for Store {
+    #[instrument(skip...","['', '', '']",0.0,0.0,0.0,0
+src/screens/NewAnalytics/PaymentAnalytics/PaymentsOverviewSection/NewPaymentsOverviewSectionHelper.res,1512,"module SmartRetryCard = {
+  open NewAnalyticsHelper
+  open NewPaymentsOverviewSectionTypes
+  open NewPaymentsOverviewSectionUtils
+  open NewAnalyticsUtils
+  @react.component
+  let make = (~responseKey: overviewColumns, ~data) => {
+    open LogicUtils
+    let {filterValueJson} = React.useContext(FilterContext.filterContext)
+    let comparison = filterValueJson->getString(""comp","arison"", """")->DateRangeUtils.comparisonMapprer
+    let currency = filterValueJson->getString((#currency: NewAnalyticsTypes.filters :> string), """")
+    let config = getInfo(~responseKey)
+    let primaryValue = getValueFromObj(data, 0, responseKey->getStringFromVariant)
+    let secondaryValue = getValueFromObj(data, 1, responseKey->getStringFromVariant)
+
+    let (value, direction) = calculatePercent...","['', '', '']",0.0,0.0,0.0,0
+crates/router/tests/connectors/airwallex.rs,13580,"use std::str::FromStr;
+
+use hyperswitch_domain_models::address::{Address, AddressDetails};
+use masking::{PeekInterface, Secret};
+use router::types::{self, domain, storage::enums, AccessToken};
+
+use crate::{
+    connector_auth,
+    utils::{self, Connector, ConnectorActions},
+};
+
+#[derive(Clone, Copy)]
+struct AirwallexTest;
+impl ConnectorActions for AirwallexTest {}
+
+static CONNECTOR: AirwallexTest ...","ect(""Authorize payment response"");
+    assert_eq!(response.status, enums::AttemptStatus::Authorized);
+}
+
+// Captures a payment using the manual capture flow (Non 3DS).
+#[serial_test::serial]
+#[actix_web::test]
+async fn should_capture_authorized_payment() {
+    let response = CONNECTOR
+        .authorize_and_capture_payment(payment_method_details(), None, get_default_payment_info())
+        .await
+...","['', '', '']",0.0,0.0,0.0,0
+crates/hyperswitch_connectors/src/connectors/fiserv/transformers.rs,18395,"use common_enums::enums;
+use common_utils::{ext_traits::ValueExt, pii, types::FloatMajorUnit};
+use error_stack::ResultExt;
+use hyperswitch_domain_models::{
+    payment_method_data::PaymentMethodData,
+    router_data::{ConnectorAuthType, RouterData},
+    router_flow_types::refunds::{Execute, RSync},
+    router_request_types::ResponseId,
+    router_response_types::{PaymentsResponseData, RefundsRespo...","dConnectorConfig {
+                config: ""Merchant connector account metadata"",
+            })?;
+
+        let merchant_details = MerchantDetails {
+            merchant_id: auth.merchant_account,
+            terminal_id: Some(session.terminal_id),
+        };
+
+        let transaction_interaction = TransactionInteraction {
+            //Payment is being made in online mode, card not present
+       ...","['', '', '']",0.0,0.0,0.0,0
+crates/api_models/src/payments/additional_info.rs,6653,"use common_utils::new_type::{
+    MaskedBankAccount, MaskedIban, MaskedRoutingNumber, MaskedSortCode, MaskedUpiVpaId,
+};
+use masking::Secret;
+use utoipa::ToSchema;
+
+use crate::enums as api_enums;
+
+#[derive(Eq, PartialEq, Clone, Debug, serde::Deserialize, serde::Serialize, ToSchema)]
+#[serde(rename_all = ""snake_case"")]
+pub enum BankDebitAdditionalData {
+    Ach(Box<AchBankDebitAdditionalData>),
+   ...","rType>, example = ""personal"")]
+    pub bank_holder_type: Option<common_enums::BankHolderType>,
+}
+
+#[derive(Eq, PartialEq, Clone, Debug, serde::Deserialize, serde::Serialize, ToSchema)]
+pub struct BacsBankDebitAdditionalData {
+    /// Partially masked account number for Bacs payment method
+    #[schema(value_type = String, example = ""0001****3456"")]
+    pub account_number: MaskedBankAccount,
+
+    /...","['', '', '']",0.0,0.0,0.0,0
+crates/router/tests/health_check.rs,196,"mod utils;
+
+use utils::{mk_service, AppClient};
+
+","#[actix_web::test]
+async fn health_check() {
+    let server = Box::pin(mk_service()).await;
+    let client = AppClient::guest();
+
+    assert_eq!(client.health(&server).await, ""health is good"");
+}
+","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/types/storage.rs,2036,"pub mod address;
+pub mod api_keys;
+pub mod authentication;
+pub mod authorization;
+pub mod blocklist;
+pub mod blocklist_fingerprint;
+pub mod blocklist_lookup;
+pub mod business_profile;
+pub mod callback_mapper;
+pub mod capture;
+pub mod cards_info;
+pub mod configs;
+pub mod customers;
+pub mod dashboard_metadata;
+pub mod dispute;
+pub mod dynamic_routing_stats;
+pub mod enums;
+pub mod ephemeral_key;
+pub ...",")]
+pub mod kv;
+pub mod locker_mock_up;
+pub mod mandate;
+pub mod merchant_account;
+pub mod merchant_connector_account;
+pub mod merchant_key_store;
+pub mod payment_attempt;
+pub mod payment_link;
+pub mod payment_method;
+pub mod payout_attempt;
+pub mod payouts;
+pub mod refund;
+#[cfg(feature = ""v2"")]
+pub mod revenue_recovery;
+pub mod reverse_lookup;
+pub mod role;
+pub mod routing_algorithm;
+pub mod unif...","['', '', '']",0.0,0.0,0.0,0
+src/screens/Settings/BusinessDetails.res,5528,"open HSwitchSettingTypes
+open MerchantAccountUtils
+open APIUtils
+open SettingsFieldsInfo
+
+module InfoOnlyView = {
+  @react.component
+  let make = (~heading, ~subHeading=""Default value"") => {
+    <div className=""flex flex-col gap-2 m-2 md:m-4"">
+      <p className=""font-semibold text-fs-13""> {heading->React.string} </p>
+      <p className=""font-medium text-fs-13 text-black opacity-50 break-words"">
+ ...","tring}>
+            {switch formState {
+            | Preview => <InfoOnlyView heading={field.label} subHeading={defaultText} />
+            | Edit =>
+              <FormRenderer.FieldRenderer
+                labelClass=""font-semibold !text-black""
+                field={FormRenderer.makeFieldInfo(
+                  ~label=field.label,
+                  ~name=field.name,
+                  ~placehol...","['', '', '']",0.0,0.0,0.0,0

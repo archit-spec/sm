@@ -1,0 +1,190 @@
+file,target_len,prompt_snippet,target_snippet,generations,best_bleu,best_recall,best_rougeL,exact_match_any
+crates/router/src/routes/payment_methods.rs,9613,"#[cfg(all(
+    any(feature = ""v1"", feature = ""v2"", feature = ""olap"", feature = ""oltp""),
+    all(not(feature = ""customer_v2""), not(feature = ""payment_methods_v2""))
+))]
+use actix_multipart::form::MultipartForm;
+use actix_web::{web, HttpRequest, HttpResponse};
+use common_utils::{errors::CustomResult, id_type, transformers::ForeignFrom};
+use diesel_models::enums::IntentStatus;
+use error_stack::ResultE...","         merchant_id,
+            &state.store.get_master_key().to_vec().into(),
+        )
+        .await
+        .to_not_found_response(errors::ApiErrorResponse::MerchantAccountNotFound)?;
+
+    let merchant_account = state
+        .store
+        .find_merchant_account_by_merchant_id(key_manager_state, merchant_id, &key_store)
+        .await
+        .to_not_found_response(errors::ApiErrorResponse:...","['', '', '']",0.0,0.0,0.0,0
+crates/api_models/src/disputes.rs,8114,"use std::collections::HashMap;
+
+use common_utils::types::TimeRange;
+use masking::{Deserialize, Serialize};
+use serde::de::Error;
+use time::PrimitiveDateTime;
+use utoipa::ToSchema;
+
+use super::enums::{Currency, DisputeStage, DisputeStatus};
+use crate::{admin::MerchantConnectorInfo, files};
+
+#[derive(Clone, Debug, Serialize, ToSchema, Eq, PartialEq)]
+pub struct DisputeResponse {
+    /// The identifi..."," The `profile_id` associated with the dispute
+    #[schema(value_type = Option<String>)]
+    pub profile_id: Option<common_utils::id_type::ProfileId>,
+    /// The `merchant_connector_id` of the connector / processor through which the dispute was processed
+    #[schema(value_type = Option<String>)]
+    pub merchant_connector_id: Option<common_utils::id_type::MerchantConnectorAccountId>,
+}
+
+#[derive...","['', '', '']",0.0,0.0,0.0,0
+crates/hyperswitch_interfaces/src/webhooks.rs,9264,"//! Webhooks interface
+
+use common_utils::{crypto, errors::CustomResult, ext_traits::ValueExt};
+use error_stack::ResultExt;
+use hyperswitch_domain_models::{
+    api::ApplicationResponse, errors::api_error_response::ApiErrorResponse,
+};
+use masking::{ExposeInterface, Secret};
+
+use crate::{api::ConnectorCommon, errors};
+
+/// struct IncomingWebhookRequestDetails
+#[derive(Debug)]
+pub struct IncomingWe...","etails<'_>,
+        merchant_id: &common_utils::id_type::MerchantId,
+        connector_webhook_details: Option<common_utils::pii::SecretSerdeValue>,
+        connector_name: &str,
+    ) -> CustomResult<Vec<u8>, errors::ConnectorError> {
+        let algorithm = self.get_webhook_body_decoding_algorithm(request)?;
+
+        let message = self
+            .get_webhook_body_decoding_message(request)
+    ...","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/ext_traits.rs,8351,"//! This module holds traits for extending functionalities for existing datatypes
+//! & inbuilt datatypes.
+
+use error_stack::ResultExt;
+use masking::{ExposeInterface, PeekInterface, Secret, Strategy};
+use quick_xml::de;
+#[cfg(all(feature = ""logs"", feature = ""async_ext""))]
+use router_env::logger;
+use serde::{Deserialize, Serialize};
+
+use crate::{
+    crypto,
+    errors::{self, CustomResult},
+    fp...","esult<P, <P as TryFrom<&'e Self>>::Error>: ResultExt,
+        <Result<P, <P as TryFrom<&'e Self>>::Error> as ResultExt>::Ok: Serialize,
+    {
+        serde_urlencoded::to_string(
+            &P::try_from(self).change_context(errors::ParsingError::UnknownError)?,
+        )
+        .change_context(errors::ParsingError::EncodeError(""url-encoded""))
+        .attach_printable_lazy(|| format!(""Unable to ...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/core/payment_methods/surcharge_decision_configs.rs,11694,"use api_models::{
+    payment_methods::SurchargeDetailsResponse,
+    payments, routing,
+    surcharge_decision_configs::{self, SurchargeDecisionConfigs, SurchargeDecisionManagerRecord},
+};
+#[cfg(all(
+    any(feature = ""v1"", feature = ""v2""),
+    not(feature = ""payment_methods_v2"")
+))]
+use common_utils::{ext_traits::StringExt, types as common_utils_types};
+#[cfg(all(feature = ""v2"", feature = ""paymen...",",
+    algorithm_ref: routing::RoutingAlgorithmRef,
+    payment_attempt: &storage::PaymentAttempt,
+    payment_intent: &storage::PaymentIntent,
+    billing_address: Option<hyperswitch_domain_models::address::Address>,
+    response_payment_method_types: &mut [api_models::payment_methods::ResponsePaymentMethodsEnabled],
+) -> ConditionalConfigResult<(
+    types::SurchargeMetadata,
+    surcharge_decisi...","['', '', '']",0.0,0.0,0.0,0
+crates/storage_impl/src/mock_db.rs,6548,"use std::sync::Arc;
+
+use common_utils::{errors::CustomResult, types::keymanager::KeyManagerState};
+use diesel_models as store;
+use error_stack::ResultExt;
+use futures::lock::{Mutex, MutexGuard};
+use hyperswitch_domain_models::{
+    behaviour::{Conversion, ReverseConversion},
+    merchant_key_store::MerchantKeyStore,
+    payments::{payment_attempt::PaymentAttempt, PaymentIntent},
+};
+use redis_inter...","b disputes: Arc<Mutex<Vec<store::Dispute>>>,
+    pub lockers: Arc<Mutex<Vec<store::LockerMockUp>>>,
+    pub mandates: Arc<Mutex<Vec<store::Mandate>>>,
+    pub captures: Arc<Mutex<Vec<store::capture::Capture>>>,
+    pub merchant_key_store: Arc<Mutex<Vec<store::merchant_key_store::MerchantKeyStore>>>,
+    pub business_profiles: Arc<Mutex<Vec<store::business_profile::Profile>>>,
+    pub reverse_looku...","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/id_type/global_id/customer.rs,1216,"use error_stack::ResultExt;
+
+use crate::{errors, generate_id_with_default_len, generate_time_ordered_id_without_prefix, types};
+
+crate::global_id_type!(
+    GlobalCustomerId,
+    ""A global id that can be used to identify a customer.
+
+The format will be `<cell_id>_<entity_prefix>_<time_ordered_id>`.
+
+Exa","mple: `cell1_cus_uu1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p`""
+);
+
+// Database related implementations so that this field can be used directly in the database tables
+crate::impl_queryable_id_type!(GlobalCustomerId);
+crate::impl_to_sql_from_sql_global_id_type!(GlobalCustomerId);
+
+impl GlobalCustomerId {
+    /// Get string representation of the id
+    pub fn get_string_repr(&self) -> &str {
+        self.0.ge...","['', '', '']",0.0,0.0,0.0,0
+crates/router/tests/connectors/recurly.rs,10060,"use hyperswitch_domain_models::payment_method_data::{Card, PaymentMethodData};
+use masking::Secret;
+use router::types::{self, api, storage::enums};
+use test_utils::connector_auth;
+
+use crate::utils::{self, ConnectorActions};
+
+#[derive(Clone, Copy)]
+struct RecurlyTest;
+impl ConnectorActions for RecurlyTest {}
+impl utils::Connector for RecurlyTest {
+    fn get_data(&self) -> api::ConnectorData {
+   ...","uthorize_payment(payment_method_details(), get_default_payment_info())
+        .await
+        .expect(""Authorize payment response"");
+    let txn_id = utils::get_connector_transaction_id(authorize_response.response);
+    let response = CONNECTOR
+        .psync_retry_till_status_matches(
+            enums::AttemptStatus::Authorized,
+            Some(types::PaymentsSyncData {
+                connecto...","['', '', '']",0.0,0.0,0.0,0
+crates/router/src/services/api/request.rs,1268,"use std::str::FromStr;
+
+pub use common_utils::request::ContentType;
+use common_utils::request::Headers;
+use error_stack::ResultExt;
+pub use masking::{Mask, Maskable};
+use router_env::{instrument, tracing};
+
+use crate::core::errors::{self, CustomResult};
+
+pub(super) trait HeaderExt {
+    fn construct_header_map(
+    ","    self,
+    ) -> CustomResult<reqwest::header::HeaderMap, errors::ApiClientError>;
+}
+
+impl HeaderExt for Headers {
+    fn construct_header_map(
+        self,
+    ) -> CustomResult<reqwest::header::HeaderMap, errors::ApiClientError> {
+        use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
+
+        self.into_iter().try_fold(
+            HeaderMap::new(),
+            |mut header_map, (h...","['', '', '']",0.0,0.0,0.0,0

@@ -1,0 +1,152 @@
+[
+  {
+    "file": "crates/router/src/db/user_role.rs",
+    "target_len": 10039,
+    "prompt_snippet": "use common_utils::id_type;\nuse diesel_models::{\n    enums::{self, UserStatus},\n    user_role as storage,\n};\nuse error_stack::{report, ResultExt};\nuse router_env::{instrument, tracing};\n\nuse super::MockDb;\nuse crate::{\n    connection,\n    core::errors::{self, CustomResult},\n    services::Store,\n};\n\npub struct ListUserRolesByOrgIdPayload<'a> {\n    pub user_id: Option<&'a String>,\n    pub tenant_id: ...",
+    "target_snippet": ".to_owned(),\n            org_id.to_owned(),\n            merchant_id.to_owned(),\n            profile_id.to_owned(),\n            version,\n        )\n        .await\n        .map_err(|error| report!(errors::StorageError::from(error)))\n    }\n\n    #[instrument(skip_all)]\n    async fn update_user_role_by_user_id_and_lineage(\n        &self,\n        user_id: &str,\n        tenant_id: &id_type::TenantId,\n    ...",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  },
+  {
+    "file": "crates/analytics/src/payments/metrics.rs",
+    "target_len": 5417,
+    "prompt_snippet": "use std::collections::HashSet;\n\nuse api_models::analytics::{\n    payments::{PaymentDimensions, PaymentFilters, PaymentMetrics, PaymentMetricsBucketIdentifier},\n    Granularity, TimeRange,\n};\nuse diesel_models::enums as storage_enums;\nuse time::PrimitiveDateTime;\n\nuse crate::{\n    enums::AuthInfo,\n    query::{Aggregate, GroupByClause, ToSql, Window},\n    types::{AnalyticsCollection, AnalyticsDataSo...",
+    "target_snippet": "tion<String>,\n    pub client_source: Option<String>,\n    pub client_version: Option<String>,\n    pub profile_id: Option<String>,\n    pub card_network: Option<String>,\n    pub merchant_id: Option<String>,\n    pub card_last_4: Option<String>,\n    pub card_issuer: Option<String>,\n    pub error_reason: Option<String>,\n    pub first_attempt: Option<bool>,\n    pub total: Option<bigdecimal::BigDecimal>,\n...",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  },
+  {
+    "file": "crates/analytics/src/api_event/events.rs",
+    "target_len": 3704,
+    "prompt_snippet": "use api_models::analytics::{\n    api_event::{ApiLogsRequest, QueryType},\n    Granularity,\n};\nuse common_utils::errors::ReportSwitchExt;\nuse error_stack::ResultExt;\nuse router_env::Flow;\nuse time::PrimitiveDateTime;\n\nuse crate::{\n    query::{Aggregate, GroupByClause, QueryBuilder, ToSql, Window},\n    types::{AnalyticsCollection, AnalyticsDataSource, FiltersError, FiltersResult, LoadRow},\n};\npub tra...",
+    "target_snippet": "AnalyticsCollection::ApiEvents);\n    query_builder.add_select_column(\"*\").switch()?;\n\n    query_builder\n        .add_filter_clause(\"merchant_id\", merchant_id)\n        .switch()?;\n    match query_param.query_param {\n        QueryType::Payment { payment_id } => {\n            query_builder\n                .add_filter_clause(\"payment_id\", &payment_id)\n                .switch()?;\n            query_buil...",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  },
+  {
+    "file": "crates/hyperswitch_domain_models/src/router_response_types/revenue_recovery.rs",
+    "target_len": 1428,
+    "prompt_snippet": "use common_utils::types::MinorUnit;\nuse time::PrimitiveDateTime;\n#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]\npub struct BillingConnectorPaymentsSyncResponse {\n    /// transaction amount against invoice, accepted in minor unit.\n    pub amount: MinorUnit,\n    /// currency of the transaction\n    pub currency: common_enums::enums::Currency,\n",
+    "target_snippet": "    /// merchant reference id at billing connector. ex: invoice_id\n    pub merchant_reference_id: common_utils::id_type::PaymentReferenceId,\n    /// transaction id reference at payment connector\n    pub connector_transaction_id: Option<common_utils::types::ConnectorTransactionId>,\n    /// error code sent by billing connector.\n    pub error_code: Option<String>,\n    /// error message sent by billin...",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  },
+  {
+    "file": "crates/diesel_models/src/query/role.rs",
+    "target_len": 6159,
+    "prompt_snippet": "use async_bb8_diesel::AsyncRunQueryDsl;\nuse common_enums::EntityType;\nuse common_utils::id_type;\nuse diesel::{\n    associations::HasTable, debug_query, pg::Pg, result::Error as DieselError,\n    BoolExpressionMethods, ExpressionMethods, QueryDsl,\n};\nuse error_stack::{report, ResultExt};\nuse strum::IntoEnumIterator;\n\nuse crate::{\n    enums::RoleScope, errors, query::generics, role::*, schema::roles:...",
+    "target_snippet": "lf> {\n        generics::generic_find_one::<<Self as HasTable>::Table, _, _>(\n            conn,\n            dsl::role_id\n                .eq(role_id.to_owned())\n                .and(dsl::tenant_id.eq(tenant_id.to_owned()))\n                .and(dsl::org_id.eq(org_id.to_owned()))\n                .and(\n                    dsl::scope\n                        .eq(RoleScope::Organization)\n                ...",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  },
+  {
+    "file": "crates/common_utils/src/pii.rs",
+    "target_len": 8047,
+    "prompt_snippet": "//! Personal Identifiable Information protection.\n\nuse std::{convert::AsRef, fmt, ops, str::FromStr};\n\nuse diesel::{\n    backend::Backend,\n    deserialize,\n    deserialize::FromSql,\n    prelude::*,\n    serialize::{Output, ToSql},\n    sql_types, AsExpression,\n};\nuse error_stack::ResultExt;\nuse masking::{ExposeInterface, Secret, Strategy, WithType};\n#[cfg(feature = \"logs\")]\nuse router_env::logger;\nu...",
+    "target_snippet": "_types::Text, DB>,\n{\n    fn from_sql(bytes: DB::RawValue<'_>) -> deserialize::Result<Self> {\n        let val = String::from_sql(bytes)?;\n        Ok(Self::from_str(val.as_str())?)\n    }\n}\n\nimpl<DB> ToSql<sql_types::Text, DB> for PhoneNumber\nwhere\n    DB: Backend,\n    String: ToSql<sql_types::Text, DB>,\n{\n    fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, DB>) -> diesel::serialize::Result {\n      ...",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  },
+  {
+    "file": "crates/diesel_models/src/payment_intent.rs",
+    "target_len": 9214,
+    "prompt_snippet": "use common_enums::{PaymentMethodType, RequestIncrementalAuthorization};\nuse common_types::primitive_wrappers::RequestExtendedAuthorizationBool;\nuse common_utils::{encryption::Encryption, pii, types::MinorUnit};\nuse diesel::{AsChangeset, Identifiable, Insertable, Queryable, Selectable};\nuse serde::{Deserialize, Serialize};\nuse time::PrimitiveDateTime;\n\n#[cfg(feature = \"v1\")]\nuse crate::schema::paym...",
+    "target_snippet": "   .or_else(|| self.get_default_tax_amount())\n    }\n\n    /// Get the default tax amount\n    pub fn get_default_tax_amount(&self) -> Option<MinorUnit> {\n        self.default\n            .as_ref()\n            .map(|default_tax_details| default_tax_details.order_tax_amount)\n    }\n}\n\ncommon_utils::impl_to_sql_from_sql_json!(TaxDetails);\n\n#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]\npub s...",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  },
+  {
+    "file": "crates/hyperswitch_connectors/src/connectors/nomupay/transformers.rs",
+    "target_len": 9067,
+    "prompt_snippet": "#[cfg(feature = \"payouts\")]\nuse common_enums::enums::PayoutEntityType;\nuse common_enums::{enums, Currency, PayoutStatus};\nuse common_utils::{pii::Email, types::FloatMajorUnit};\nuse hyperswitch_domain_models::router_data::ConnectorAuthType;\n#[cfg(feature = \"payouts\")]\nuse hyperswitch_domain_models::{\n    router_response_types::PayoutsResponseData, types::PayoutsRouterData,\n};\nuse hyperswitch_interf...",
+    "target_snippet": "elCase\")]\npub struct OnboardTransferMethodRequest {\n    pub country_code: enums::CountryAlpha2,\n    pub currency_code: Currency,\n    #[serde(rename = \"type\")]\n    pub transfer_method_type: TransferMethodType,\n    pub display_name: Secret<String>,\n    pub bank_account: BankAccount,\n    pub profile: Profile,\n}\n\n#[derive(Serialize, Deserialize, Debug)]\n#[serde(rename_all = \"camelCase\")]\npub struct No...",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  },
+  {
+    "file": "crates/analytics/src/payments/metrics/payment_count.rs",
+    "target_len": 3672,
+    "prompt_snippet": "use std::collections::HashSet;\n\nuse api_models::analytics::{\n    payments::{PaymentDimensions, PaymentFilters, PaymentMetricsBucketIdentifier},\n    Granularity, TimeRange,\n};\nuse common_utils::errors::ReportSwitchExt;\nuse error_stack::ResultExt;\nuse time::PrimitiveDateTime;\n\nuse super::PaymentMetricRow;\nuse crate::{\n    enums::AuthInfo,\n    query::{Aggregate, GroupByClause, QueryBuilder, QueryFilt...",
+    "target_snippet": "trics(\n        &self,\n        dimensions: &[PaymentDimensions],\n        auth: &AuthInfo,\n        filters: &PaymentFilters,\n        granularity: Option<Granularity>,\n        time_range: &TimeRange,\n        pool: &T,\n    ) -> MetricsResult<HashSet<(PaymentMetricsBucketIdentifier, PaymentMetricRow)>> {\n        let mut query_builder: QueryBuilder<T> = QueryBuilder::new(AnalyticsCollection::Payment);\n\n...",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  },
+  {
+    "file": "crates/hyperswitch_domain_models/src/router_flow_types/revenue_recovery.rs",
+    "target_len": 88,
+    "prompt_snippet": "#[derive(Debug, Clone)]\npub stru",
+    "target_snippet": "ct BillingConnectorPaymentsSync;\n#[derive(Debug, Clone)]\npub struct RecoveryRecordBack;\n",
+    "generations": [
+      "",
+      "",
+      ""
+    ],
+    "best_bleu": 0.0,
+    "best_recall": 0.0,
+    "best_rougeL": 0.0,
+    "exact_match_any": 0
+  }
+]

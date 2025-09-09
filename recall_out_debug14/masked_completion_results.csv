@@ -1,0 +1,395 @@
+file,mask_idx,target_len,prompt_snippet,target_snippet,generations,best_token_recall,best_bleu,best_rougeL,exact_match_any
+crates/router/src/db/user_role.rs,0,4951,"use common_utils::id_type;
+use diesel_models::{
+    enums::{self, UserStatus},
+    user_role as storage,
+};
+use error_stack::{report, ResultExt};
+use router_env::{instrument, tracing};
+
+use super::MockDb;
+use crate::{
+    connection,
+    core::errors::{self, CustomResult},
+    services::Store,
+};
+
+pub struct ListUserRolesByOrgIdPayload<'a> {
+    pub user_id: Option<&'a String>,
+    pub tenant_id: ...","
+    #[instrument(skip_all)]
+    async fn insert_user_role(
+        &self,
+        user_role: storage::UserRoleNew,
+    ) -> CustomResult<storage::UserRole, errors::StorageError> {
+        let conn = connection::pg_connection_write(self).await?;
+
+        user_role
+            .insert(&conn)
+            .await
+            .map_err(|error| report!(errors::StorageError::from(error)))
+    }
+
+    #[ins...","["" // Database related implementations\n    #[instrument(skip_all)]\n    async fn insert_user_role(\n        &self,\n        user_role: storage::UserRoleNew,\n    ) -> CustomResult<storage::UserRole, errors::StorageError> {\n        let conn = connection::pg_connection_write(self).await?;\n        user_role\n            .insert(&conn)\n            .await\n            .map_err(|error| report!(errors::StorageError::from(error)))\n    }\n\n    #[instrument(skip_all)]\n    async fn find_user_role_by_user_id_and_lineage(\n        &self,\n        user_id: &str,\n        tenant_id: &id_type::TenantId,\n        org_id: &id_type::OrganizationId,\n        merchant_id: &id_type::MerchantId,\n        profile_id: &id_type::ProfileId,\n        version: enums::UserRoleVersion,\n    ) -> CustomResult<storage::UserRole, errors::StorageError> {\n        let conn = connection::pg_connection_read(self).await?;\n        storage::UserRole::find_by_user_id_tenant_id_org_id_merchant_id_profile_id(\n            &conn,\n            user_id,\n            tenant_id,\n            org_id,\n            merchant_id,\n            profile_id,\n            version,\n        )\n        .await\n        .map_err(|error| report!(errors::StorageError::from(error)))\n    }\n\n    #[instrument(skip_all)]\n    async fn update_user_role_by_user_id_and_lineage(\n        &self,\n        user_id: &str,\n        tenant_id: &id_type::TenantId,\n        org_id: &id_type::OrganizationId,\n        merchant_id: Option<&id_type::MerchantId>,\n        profile_id: Option<&id_type::ProfileId>,\n        update: storage::UserRoleUpdate,\n        version: enums::UserRoleVersion,\n    ) -> CustomResult<storage::UserRole, errors::StorageError> {\n        let conn = connection::pg_connection_write(self).await?;\n        storage::UserRole::update_by_user_id_tenant_id_org_id_merchant_id_profile_id(\n            &conn,\n            user_id,\n            tenant_id,\n            org_id,\n            merchant_id.cloned(),\n            profile_id.cloned(),\n            update,\n            version,\n        )\n        .await\n        .map_err(|error| report!(errors::StorageError::from(error)))\n    }\n\n    #[instrument(skip_all)]\n    async fn delete_user_role_by_user_id_and_lineage(\n        &self,\n        user_id: &str,\n        tenant_id: &id_type::TenantId,\n        org_id: &id_type::OrganizationId,\n        merchant_id: &id_type::MerchantId,\n        profile_id: &id_type::ProfileId,\n        version: enums::UserRoleVersion,\n    ) -> CustomResult<storage::UserRole, errors::StorageError> {\n        let conn = connection::pg_connection_write(self).await?;\n        storage::UserRole::delete_by_user_id_tenant_id_org_id_merchant_id_profile_id(\n            &conn,\n            user_id,\n            tenant_id,\n            org_id,\n            merchant_id,\n            profile_id,\n            version,\n        )\n        .await\n        .map_err(|error| report!(errors::StorageError::from(error)))\n    }\n\n    #[instrument(skip_all)]\n    async fn list_user_roles_by_user_id<'a>(\n        &self,\n        payload: ListUserRolesByUserIdPayload<'a>,\n    ) -> CustomResult<Vec<storage::UserRole>, errors::StorageError> {\n        let conn = connection::pg_connection_read(self).await?;\n        storage::UserRole::list_user_roles_by_user_id(\n            &conn,\n            payload.user_id,\n            payload.tenant_id,\n            payload.org_id.cloned(),\n            payload.merchant_id.cloned(),\n            payload.profile_id.cloned(),\n            payload.entity_id.cloned(),\n            payload.status.cloned(),\n            payload.limit.cloned(),\n            payload.version.cloned(),\n        )\n        .await\n        .map_err(|error| report!(errors::StorageError::from(error)))\n    }\n\n    #[instrument(skip_all)]\n    async fn list_user_roles_by_user_id_across_tenants(\n        &self,\n        user_id: &str,\n        limit: Option<u32>,\n    ) -> CustomResult<Vec<storage::UserRole>, errors::StorageError> {\n        let conn = connection::pg_connection_read(self).await?;\n        storage::UserRole::list_user_roles_by_user_id_across_tenants(&conn, user_id, limit)\n            .await\n            .map_err(|error| report!(errors::StorageError::from(error)))\n    }\n\n    #[instrument(skip_all)]\n    async fn list_user_roles_by_org_id<'a>(\n        &self,\n        payload: ListUserRolesByOrgIdPayload<'a>,\n    ) -> CustomResult<Vec<storage::UserRole>, errors::StorageError> {\n        let conn = connection::pg_connection_read(self).await?;\n        storage::UserRole::list_user_roles_by_org_id(\n            &conn,\n            payload.user_id.cloned"", '', '']",0.9590909090909091,82.9966681035222,90.73359073359075,0
+crates/router/src/db/user_role.rs,1,1180,"use common_utils::id_type;
+use diesel_models::{
+    enums::{self, UserStatus},
+    user_role as storage,
+};
+use error_stack::{report, ResultExt};
+use router_env::{instrument, tracing};
+
+use super::MockDb;
+use crate::{
+    connection,
+    core::errors::{self, CustomResult},
+    services::Store,
+};
+
+pub struct ListUserRolesByOrgIdPayload<'a> {
+    pub user_id: Option<&'a String>,
+    pub tenant_id: ...","
+        let mut db_user_roles = self.user_roles.lock().await;
+
+        if db_user_roles
+            .iter()
+            .any(|user_role_inner| user_role_inner.user_id == user_role.user_id)
+        {
+            Err(errors::StorageError::DuplicateValue {
+                entity: ""user_id"",
+                key: None,
+            })?
+        }
+        let user_role = storage::UserRole {
+            i...","[' Ok(user_role) }\n\n    async fn find_user_role_by_user_id_and_lineage(\n        &self,\n        user_id: &str,\n        tenant_id: &id_type::TenantId,\n        org_id: &id_type::OrganizationId,\n        merchant_id: &id_type::MerchantId,\n        profile_id: &id_type::ProfileId,\n        version: enums::UserRoleVersion,\n    ) -> CustomResult<storage::UserRole, errors::StorageError> {\n        self.user_role\n            .iter()\n            .find(|user_role| {\n                user_role.user_id == user_id\n                    && user_role.tenant_id == tenant_id\n                    && user_role.org_id == org_id\n                    && user_role.merchant_id == merchant_id\n                    && user_role.profile_id == profile_id\n                    && user_role.version == version\n            })\n            .cloned()\n            .ok_or(errors::StorageError::ValueNotFound(\n                ""user role not found"".to_string(),\n            ))\n    }\n\n    async fn update_user_role_by_user_id_and_lineage(\n        &self,\n        user_id: &str,\n        tenant_id: &id_type::TenantId,\n        org_id: &id_type::OrganizationId,\n        merchant_id: Option<&id_type::MerchantId>,\n        profile_id: Option<&id_type::ProfileId>,\n        update: storage::UserRoleUpdate,\n        version: enums::UserRoleVersion,\n    ) -> CustomResult<storage::UserRole, errors::StorageError> {\n        self.user_role\n            .iter_mut()\n            .find(|user_role| {\n                user_role.user_id == user_id\n                    && user_role.tenant_id == tenant_id\n                    && user_role.org_id == org_id\n                    && user_role.merchant_id == merchant_id.cloned()\n                    && user_role.profile_id == profile_id.cloned()\n                    && user_role.version == version\n            })\n            .map(|user_role| {\n                *user_role = user_role.clone().update(update);\n                user_role.clone()\n            })\n            .ok_or(errors::StorageError::ValueNotFound(\n                ""user role not found"".to_string(),\n            ))\n    }\n\n    async fn delete_user_role_by_user_id_and_lineage(\n        &self,\n        user_id: &str,\n        tenant_id: &id_type::TenantId,\n        org_id: &id_type::OrganizationId,\n        merchant_id: &id_type::MerchantId,\n        profile_id: &id_type::ProfileId,\n        version: enums::UserRoleVersion,\n    ) -> CustomResult<storage::UserRole, errors::StorageError> {\n        self.user_role\n            .iter()\n            .position(|user_role| {\n                user_role.user_id == user_id\n                    && user_role.tenant_id == tenant_id\n                    && user_role.org_id == org_id\n                    && user_role.merchant_id == merchant_id\n                    && user_role.profile_id == profile_id\n                    && user_role.version == version\n            })\n            .map(|index| {\n                self.user_role.remove(index);\n                Ok(self.user_role[index])\n            })\n            .transpose()\n            .map_err(|_| errors::StorageError::ValueNotFound(\n                ""user role not found"".to_string(),\n            ))\n    }\n\n    async fn list_user_roles_by_user_id<\'a>(\n        &self,\n        payload: ListUserRolesByUserIdPayload<\'a>,\n    ) -> CustomResult<Vec<storage::UserRole>, errors::StorageError> {\n        let mut user_role_list = Vec::new();\n        for user_role in self.user_role.iter() {\n            if user_role.user_id == payload.user_id\n                && user_role.tenant_id == payload.tenant_id\n                && user_role.org_id == payload.org_id.cloned()\n                && user_role.merchant_id == payload.merchant_id.cloned()\n                && user_role.profile_id == payload.profile_id.cloned()\n                && user_role.entity_id == payload.entity_id.cloned()\n                && user_role.status == payload.status\n                && user_role.version == payload.version\n            {\n                user_role_list.push(user_role.clone());\n            }\n        }\n        Ok(user_role_list)\n    }\n\n    async fn list_user_roles_by_user_id_across_tenants(\n        &self,\n        user_id: &str,\n        limit: Option<u32>,\n    ) -> CustomResult<Vec<storage::UserRole>, errors::StorageError> {\n        let mut user_role_list = Vec::new();\n        for user_role in self.user_role.iter() {\n            if user_role.user_id == user_id {\n                user_role_list.push(user_role.clone());\n            }\n        }\n        Ok(user_role_list)\n    }\n\n    async fn list_user_roles_by_org_id<\'a>(\n        &self,\n        payload: ListUserRolesByOrgIdPayload<\'a>,\n    ) -> CustomResult<Vec<storage::UserRole>, errors::StorageError> {\n        let mut user_role_list = Vec::new();\n        for user_role in self.user_role.iter', '', '']",0.782258064516129,11.801527496402446,23.692307692307693,0
+crates/router/src/db/user_role.rs,2,1694,"use common_utils::id_type;
+use diesel_models::{
+    enums::{self, UserStatus},
+    user_role as storage,
+};
+use error_stack::{report, ResultExt};
+use router_env::{instrument, tracing};
+
+use super::MockDb;
+use crate::{
+    connection,
+    core::errors::{self, CustomResult},
+    services::Store,
+};
+
+pub struct ListUserRolesByOrgIdPayload<'a> {
+    pub user_id: Option<&'a String>,
+    pub tenant_id: ...","
+        let user_roles = self.user_roles.lock().await;
+
+        for user_role in user_roles.iter() {
+            let tenant_level_check = user_role.tenant_id == *tenant_id
+                && user_role.org_id.is_none()
+                && user_role.merchant_id.is_none()
+                && user_role.profile_id.is_none();
+
+            let org_level_check = user_role.tenant_id == *tenant_id
+          ...","['', '', '']",0.0,0.0,0.0,0
+crates/analytics/src/payments/metrics.rs,0,3941,"use std::collections::HashSet;
+
+use api_models::analytics::{
+    payments::{PaymentDimensions, PaymentFilters, PaymentMetrics, PaymentMetricsBucketIdentifier},
+    Granularity, TimeRange,
+};
+use diesel_models::enums as storage_enums;
+use time::PrimitiveDateTime;
+
+use crate::{
+    enums::AuthInfo,
+    query::{Aggregate, GroupByClause, ToSql, Window},
+    types::{AnalyticsCollection, AnalyticsDataSo...","
+    async fn load_metrics(
+        &self,
+        dimensions: &[PaymentDimensions],
+        auth: &AuthInfo,
+        filters: &PaymentFilters,
+        granularity: Option<Granularity>,
+        time_range: &TimeRange,
+        pool: &T,
+    ) -> MetricsResult<HashSet<(PaymentMetricsBucketIdentifier, PaymentMetricRow)>> {
+        match self {
+            Self::PaymentSuccessRate => {
+               ...","['', '', '']",0.0,0.0,0.0,0
+crates/analytics/src/api_event/events.rs,0,2704,"use api_models::analytics::{
+    api_event::{ApiLogsRequest, QueryType},
+    Granularity,
+};
+use common_utils::errors::ReportSwitchExt;
+use error_stack::ResultExt;
+use router_env::Flow;
+use time::PrimitiveDateTime;
+
+use crate::{
+    query::{Aggregate, GroupByClause, QueryBuilder, ToSql, Window},
+    types::{AnalyticsCollection, AnalyticsDataSource, FiltersError, FiltersResult, LoadRow},
+};
+pub tra...","
+    let mut query_builder: QueryBuilder<T> = QueryBuilder::new(AnalyticsCollection::ApiEvents);
+    query_builder.add_select_column(""*"").switch()?;
+
+    query_builder
+        .add_filter_clause(""merchant_id"", merchant_id)
+        .switch()?;
+    match query_param.query_param {
+        QueryType::Payment { payment_id } => {
+            query_builder
+                .add_filter_clause(""payment_id"",...","['', '', '']",0.0,0.0,0.0,0
+crates/diesel_models/src/query/role.rs,0,56,"use async_bb8_diesel::AsyncRunQueryDsl;
+use common_enums::EntityType;
+use common_utils::id_type;
+use diesel::{
+    associations::HasTable, debug_query, pg::Pg, result::Error as DieselError,
+    BoolExpressionMethods, ExpressionMethods, QueryDsl,
+};
+use error_stack::{report, ResultExt};
+use strum::IntoEnumIterator;
+
+use crate::{
+    enums::RoleScope, errors, query::generics, role::*, schema::roles:...","
+        generics::generic_insert(conn, self).await
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/diesel_models/src/query/role.rs,1,253,"use async_bb8_diesel::AsyncRunQueryDsl;
+use common_enums::EntityType;
+use common_utils::id_type;
+use diesel::{
+    associations::HasTable, debug_query, pg::Pg, result::Error as DieselError,
+    BoolExpressionMethods, ExpressionMethods, QueryDsl,
+};
+use error_stack::{report, ResultExt};
+use strum::IntoEnumIterator;
+
+use crate::{
+    enums::RoleScope, errors, query::generics, role::*, schema::roles:...","
+        is_lineage_data_required
+            .then(|| {
+                EntityType::iter()
+                    .filter(|variant| *variant <= current_entity)
+                    .collect()
+            })
+            .unwrap_or(vec![current_entity])
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/diesel_models/src/query/role.rs,2,168,"use async_bb8_diesel::AsyncRunQueryDsl;
+use common_enums::EntityType;
+use common_utils::id_type;
+use diesel::{
+    associations::HasTable, debug_query, pg::Pg, result::Error as DieselError,
+    BoolExpressionMethods, ExpressionMethods, QueryDsl,
+};
+use error_stack::{report, ResultExt};
+use strum::IntoEnumIterator;
+
+use crate::{
+    enums::RoleScope, errors, query::generics, role::*, schema::roles:...","
+        generics::generic_find_one::<<Self as HasTable>::Table, _, _>(
+            conn,
+            dsl::role_id.eq(role_id.to_owned()),
+        )
+        .await
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/pii.rs,0,399,"//! Personal Identifiable Information protection.
+
+use std::{convert::AsRef, fmt, ops, str::FromStr};
+
+use diesel::{
+    backend::Backend,
+    deserialize,
+    deserialize::FromSql,
+    prelude::*,
+    serialize::{Output, ToSql},
+    sql_types, AsExpression,
+};
+use error_stack::ResultExt;
+use masking::{ExposeInterface, Secret, Strategy, WithType};
+#[cfg(feature = ""logs"")]
+use router_env::logger;
+u...","
+        let val_str: &str = val.as_ref();
+
+        if let Some(val_str) = val_str.get(val_str.len() - 4..) {
+            // masks everything but the last 4 digits
+            write!(f, ""{}{}"", ""*"".repeat(val_str.len() - 4), val_str)
+        } else {
+            #[cfg(feature = ""logs"")]
+            logger::error!(""Invalid phone number: {val_str}"");
+            WithType::fmt(val, f)
+        }
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/pii.rs,1,167,"//! Personal Identifiable Information protection.
+
+use std::{convert::AsRef, fmt, ops, str::FromStr};
+
+use diesel::{
+    backend::Backend,
+    deserialize,
+    deserialize::FromSql,
+    prelude::*,
+    serialize::{Output, ToSql},
+    sql_types, AsExpression,
+};
+use error_stack::ResultExt;
+use masking::{ExposeInterface, Secret, Strategy, WithType};
+#[cfg(feature = ""logs"")]
+use router_env::logger;
+u...","
+        validate_phone_number(phone_number)?;
+        let secret = Secret::<String, PhoneNumberStrategy>::new(phone_number.to_string());
+        Ok(Self(secret))
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/common_utils/src/pii.rs,2,98,"//! Personal Identifiable Information protection.
+
+use std::{convert::AsRef, fmt, ops, str::FromStr};
+
+use diesel::{
+    backend::Backend,
+    deserialize,
+    deserialize::FromSql,
+    prelude::*,
+    serialize::{Output, ToSql},
+    sql_types, AsExpression,
+};
+use error_stack::ResultExt;
+use masking::{ExposeInterface, Secret, Strategy, WithType};
+#[cfg(feature = ""logs"")]
+use router_env::logger;
+u...","
+        Self::from_str(&value).change_context(errors::ParsingError::PhoneNumberParsingError)
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/diesel_models/src/payment_intent.rs,0,382,"use common_enums::{PaymentMethodType, RequestIncrementalAuthorization};
+use common_types::primitive_wrappers::RequestExtendedAuthorizationBool;
+use common_utils::{encryption::Encryption, pii, types::MinorUnit};
+use diesel::{AsChangeset, Identifiable, Insertable, Queryable, Selectable};
+use serde::{Deserialize, Serialize};
+use time::PrimitiveDateTime;
+
+#[cfg(feature = ""v1"")]
+use crate::schema::paym...","
+        self.payment_method_type
+            .as_ref()
+            .zip(payment_method)
+            .filter(|(payment_method_type_tax, payment_method)| {
+                payment_method_type_tax.pmt == *payment_method
+            })
+            .map(|(payment_method_type_tax, _)| payment_method_type_tax.order_tax_amount)
+            .or_else(|| self.get_default_tax_amount())
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/diesel_models/src/payment_intent.rs,1,125,"use common_enums::{PaymentMethodType, RequestIncrementalAuthorization};
+use common_types::primitive_wrappers::RequestExtendedAuthorizationBool;
+use common_utils::{encryption::Encryption, pii, types::MinorUnit};
+use diesel::{AsChangeset, Identifiable, Insertable, Queryable, Selectable};
+use serde::{Deserialize, Serialize};
+use time::PrimitiveDateTime;
+
+#[cfg(feature = ""v1"")]
+use crate::schema::paym...","
+        self.default
+            .as_ref()
+            .map(|default_tax_details| default_tax_details.order_tax_amount)
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/diesel_models/src/payment_intent.rs,2,4229,"use common_enums::{PaymentMethodType, RequestIncrementalAuthorization};
+use common_types::primitive_wrappers::RequestExtendedAuthorizationBool;
+use common_utils::{encryption::Encryption, pii, types::MinorUnit};
+use diesel::{AsChangeset, Identifiable, Insertable, Queryable, Selectable};
+use serde::{Deserialize, Serialize};
+use time::PrimitiveDateTime;
+
+#[cfg(feature = ""v1"")]
+use crate::schema::paym...","
+        let PaymentIntentUpdateInternal {
+            amount,
+            currency,
+            status,
+            amount_captured,
+            customer_id,
+            return_url,
+            setup_future_usage,
+            off_session,
+            metadata,
+            billing_address_id,
+            shipping_address_id,
+            modified_at: _,
+            active_attempt_id,
+            bu...","['', '', '']",0.0,0.0,0.0,0
+crates/hyperswitch_connectors/src/connectors/nomupay/transformers.rs,0,178,"#[cfg(feature = ""payouts"")]
+use common_enums::enums::PayoutEntityType;
+use common_enums::{enums, Currency, PayoutStatus};
+use common_utils::{pii::Email, types::FloatMajorUnit};
+use hyperswitch_domain_models::router_data::ConnectorAuthType;
+#[cfg(feature = ""payouts"")]
+use hyperswitch_domain_models::{
+    router_response_types::PayoutsResponseData, types::PayoutsRouterData,
+};
+use hyperswitch_interf...","
+        //Todo :  use utils to convert the amount to the type of amount that a connector accepts
+        Self {
+            amount,
+            router_data: item,
+        }
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/hyperswitch_connectors/src/connectors/nomupay/transformers.rs,1,221,"#[cfg(feature = ""payouts"")]
+use common_enums::enums::PayoutEntityType;
+use common_enums::{enums, Currency, PayoutStatus};
+use common_utils::{pii::Email, types::FloatMajorUnit};
+use hyperswitch_domain_models::router_data::ConnectorAuthType;
+#[cfg(feature = ""payouts"")]
+use hyperswitch_domain_models::{
+    router_response_types::PayoutsResponseData, types::PayoutsRouterData,
+};
+use hyperswitch_interf...","
+        match entity {
+            PayoutEntityType::Personal
+            | PayoutEntityType::NaturalPerson
+            | PayoutEntityType::Individual => Self::Individual,
+            _ => Self::Businness,
+        }
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/hyperswitch_connectors/src/connectors/nomupay/transformers.rs,2,323,"#[cfg(feature = ""payouts"")]
+use common_enums::enums::PayoutEntityType;
+use common_enums::{enums, Currency, PayoutStatus};
+use common_utils::{pii::Email, types::FloatMajorUnit};
+use hyperswitch_domain_models::router_data::ConnectorAuthType;
+#[cfg(feature = ""payouts"")]
+use hyperswitch_domain_models::{
+    router_response_types::PayoutsResponseData, types::PayoutsRouterData,
+};
+use hyperswitch_interf...","
+        match auth_type {
+            #[cfg(feature = ""payouts"")]
+            ConnectorAuthType::BodyKey { api_key, key1 } => Ok(Self {
+                kid: api_key.to_owned(),
+                eid: key1.to_owned(),
+            }),
+            _ => Err(errors::ConnectorError::FailedToObtainAuthType.into()),
+        }
+    ","['', '', '']",0.0,0.0,0.0,0
+crates/analytics/src/payments/metrics/payment_count.rs,0,3368,"use std::collections::HashSet;
+
+use api_models::analytics::{
+    payments::{PaymentDimensions, PaymentFilters, PaymentMetricsBucketIdentifier},
+    Granularity, TimeRange,
+};
+use common_utils::errors::ReportSwitchExt;
+use error_stack::ResultExt;
+use time::PrimitiveDateTime;
+
+use super::PaymentMetricRow;
+use crate::{
+    enums::AuthInfo,
+    query::{Aggregate, GroupByClause, QueryBuilder, QueryFilt...","
+        let mut query_builder: QueryBuilder<T> = QueryBuilder::new(AnalyticsCollection::Payment);
+
+        for dim in dimensions.iter() {
+            query_builder.add_select_column(dim).switch()?;
+        }
+
+        query_builder
+            .add_select_column(Aggregate::Count {
+                field: None,
+                alias: Some(""count""),
+            })
+            .switch()?;
+        quer...","['', '', '']",0.0,0.0,0.0,0
